@@ -1,0 +1,102 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
+        
+		<OutputType>Exe</OutputType>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>DXMauiApp</RootNamespace>
+
+		<!-- Display name -->
+		<ApplicationTitle>DXMauiApp</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.companyname.DXMauiApp</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<SupportedOSPlatformVersion Condition="'$(TargetFramework)' == 'net7.0-ios'">14.2</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="'$(TargetFramework)' == 'net7.0-android'">21.0</SupportedOSPlatformVersion>
+		<UseInterpreter Condition="$(TargetFramework.Contains('-ios')) AND '$(Configuration)' == 'Release'">True</UseInterpreter>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+
+		<!-- Sounds -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\dooricon.png" />
+	  <None Remove="Resources\Raw\alert.mp3" />
+	  <None Remove="Resources\Images\accountcircle.svg" />
+	  <None Remove="Resources\Images\door.png" />
+	  <None Remove="Resources\Images\dooropen.svg" />
+	  <None Remove="Resources\Images\error.png" />
+	  <None Remove="Resources\Images\home.svg" />
+	  <None Remove="Resources\Images\shieldlock.svg" />
+	  <None Remove="Resources\Images\smartdoor.png" />
+	  <None Remove="Resources\Images\unlock.svg" />
+	  <None Remove="Resources\Raw\wrong.mp3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Include="Resources\Raw\alert.mp3" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.1.0" />
+		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="1.0.2" />
+		<PackageReference Include="DevExpress.Maui.Charts" Version="22.2.4" />
+		<PackageReference Include="DevExpress.Maui.CollectionView" Version="22.2.4" />
+		<PackageReference Include="DevExpress.Maui.Core" Version="22.2.4" />
+		<PackageReference Include="DevExpress.Maui.DataGrid" Version="22.2.4" />
+		<PackageReference Include="DevExpress.Maui.Controls" Version="22.2.4" />
+		<PackageReference Include="DevExpress.Maui.Editors" Version="22.2.4" />
+		<PackageReference Include="Plugin.Maui.Audio" Version="1.0.0" />
+		<TrimmableAssembly Include="DevExpress.Data.v22.2" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="Views\AccountPage.xaml.cs">
+	    <DependentUpon>AccountPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\LockPage.xaml.cs">
+	    <DependentUpon>LockPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\UnlockPage.xaml.cs">
+	    <DependentUpon>UnlockPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\RegisterPage.xaml.cs">
+	    <DependentUpon>RegisterPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\RegisterPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+
+	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadDebuggerTimeoutExceptionDXMauiAppHideInfoBar="True" /></VisualStudio></ProjectExtensions>
+</Project>
