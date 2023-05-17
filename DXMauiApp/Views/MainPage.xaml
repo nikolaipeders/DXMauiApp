@@ -7,20 +7,23 @@
          ios:Page.UseSafeArea="true"
         x:Class= "DXMauiApp.Views.MainPage">
     <TabBar>
-        <Tab Title="About" Icon="info">
-            <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route= "DXMauiApp.Views.AboutPage"  />
+        <Tab Title="Unlock" Icon="dooropen">
+            <ShellContent ContentTemplate="{DataTemplate local:UnlockPage}" Route= "DXMauiApp.Views.UnlockPage" />
         </Tab>
         <Tab Title ="Browse" Icon="browse">
             <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" />
-        </Tab>
-        <Tab Title="Unlock" Icon="dooropen">
-            <ShellContent ContentTemplate="{DataTemplate local:UnlockPage}"/>
         </Tab>
         <Tab Title="My lock" Icon="shieldlock">
             <ShellContent ContentTemplate="{DataTemplate local:LockPage}" />
         </Tab>
         <Tab Title="Account" Icon="accountcircle">
             <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" />
+        </Tab>
+        <Tab Title="Login" Icon="accountcircle">
+            <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
+        </Tab>
+        <Tab Title="About" Icon="info">
+            <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route= "DXMauiApp.Views.AboutPage"  />
         </Tab>
     </TabBar>
 </Shell>

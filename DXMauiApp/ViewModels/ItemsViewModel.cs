@@ -36,6 +36,8 @@ namespace DXMauiApp.ViewModels
         }
         public void OnAppearing()
         {
+            RedirectToLogin();
+
             IsBusy = true;
             SelectedItem = null;
             ExecuteLoadItemsCommand().Wait();

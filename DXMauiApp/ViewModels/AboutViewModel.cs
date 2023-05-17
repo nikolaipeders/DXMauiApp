@@ -11,6 +11,11 @@ namespace DXMauiApp.ViewModels
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://www.devexpress.com/maui/"));
         }
 
+        public void OnAppearing()
+        {
+            RedirectToLogin();
+        }
+
         public ICommand OpenWebCommand { get; }
     }
 }

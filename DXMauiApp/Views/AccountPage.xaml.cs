@@ -8,7 +8,16 @@ namespace DXMauiApp.Views
         public AccountPage()
         {
             InitializeComponent();
-            BindingContext = new AccountViewModel();
+            BindingContext = ViewModel = new AccountViewModel();
+            ViewModel.OnAppearing();
+        }
+
+        AccountViewModel ViewModel { get; }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            ViewModel.OnAppearing();
         }
     }
 }

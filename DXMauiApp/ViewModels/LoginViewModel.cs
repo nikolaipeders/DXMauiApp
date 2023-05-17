@@ -39,7 +39,8 @@ namespace DXMauiApp.ViewModels
 
         async void OnLoginClicked()
         {
-            await Navigation.NavigateToAsync<AboutViewModel>(true);
+            //await SecureStorage.Default.SetAsync("auth_token", "secret-oauth-token-value");
+            await Navigation.NavigateToAsync<UnlockViewModel>(true);
         }
 
         bool ValidateLogin()

@@ -10,7 +10,7 @@ namespace DXMauiApp.ViewModels
 
         public LockViewModel()
         {
-            Title = "Browse";
+            Title = "My lock";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
             ItemTapped = new Command<Item>(OnItemSelected);
@@ -36,9 +36,10 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-
         public void OnAppearing()
         {
+            RedirectToLogin();
+
             IsBusy = true;
             SelectedItem = null;
             ExecuteLoadItemsCommand().Wait();

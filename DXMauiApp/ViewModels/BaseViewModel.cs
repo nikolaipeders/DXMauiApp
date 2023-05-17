@@ -59,5 +59,17 @@ namespace DXMauiApp.ViewModels
             changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public async void RedirectToLogin()
+        {
+            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+
+            if (authToken == null)
+            {
+                // No value is associated with the key "auth_token", so redirect to login
+                // await Navigation.NavigateToAsync<LoginViewModel>(null);
+
+            }
+        }
+
     }
 }

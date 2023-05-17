@@ -36,10 +36,9 @@ namespace DXMauiApp.ViewModels
             UnlockCommand = new Command(async () => UnlockDoor());
         }
 
-
         async public void OnAppearing()
         {
-
+            RedirectToLogin();
         }
 
         public async void UnlockDoor()

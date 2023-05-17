@@ -1,23 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
+             xmlns:dxe="clr-namespace:DevExpress.Maui.Editors;assembly=DevExpress.Maui.Editors"
              Title="{Binding Title}"
-             IconImageSource="popup"
-             BackgroundColor="{StaticResource NormalBackgroundColor}"
-             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-             ios:Page.UseSafeArea="true"
              x:Class= "DXMauiApp.Views.AccountPage">
     <ContentPage.Content>
-        <VerticalStackLayout VerticalOptions="Center">
-            <Button VerticalOptions="Center"
-                    Margin="25,0,25,20"
-                    Text="Go to login"
-                    Style="{StaticResource PrimaryButton}"
-                    Command="{Binding OpenLoginPage}">
-            </Button>
-
-        </VerticalStackLayout>
-
+        <Grid ColumnSpacing="20" Padding="15" VerticalOptions="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <dxe:TextEdit Text="{Binding UserName}" LabelText="Username" Margin="0" Grid.Row="0" />
+            <dxe:TextEdit Text="{Binding Mail}" LabelText="Email" Margin="0" Grid.Row="1" />
+            <dxe:PasswordEdit Text="{Binding Password}" LabelText="Password"  LabelFontSize="Small" Margin="0" Grid.Row="2" />
+            <dxe:PasswordEdit Text="{Binding ConfirmPassword}" LabelText="Confirm passpord"  LabelFontSize="Small" Margin="0" Grid.Row="3" />
+            <dxe:TextEdit Text="{Binding RFID}" LabelText="RFID" Margin="0" Grid.Row="4" IsEnabled="false" />
+            <Button Text="Update account" Command="{Binding RegisterCommand}" Margin="0,10,0,0" Grid.Row="5" Style="{StaticResource PrimaryButton}"/>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
