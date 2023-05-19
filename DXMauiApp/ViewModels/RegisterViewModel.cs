@@ -1,4 +1,6 @@
-﻿using Microsoft.Maui.Controls;
+﻿using DXMauiApp.Models;
+using DXMauiApp.Services;
+using Microsoft.Maui.Controls;
 using System;
 
 namespace DXMauiApp.ViewModels
@@ -10,6 +12,7 @@ namespace DXMauiApp.ViewModels
         string password;
         string confirmPassword;
         string rfid;
+        bool isPopOpen = false;
 
         public RegisterViewModel()
         {
@@ -19,7 +22,6 @@ namespace DXMauiApp.ViewModels
             PropertyChanged +=
                 (_, __) => RegisterCommand.ChangeCanExecute();
         }
-
 
         public string UserName
         {
@@ -49,20 +51,32 @@ namespace DXMauiApp.ViewModels
             get => this.rfid;
             set => SetProperty(ref this.rfid, value);
         }
+        public bool IsPopOpen
+        {
+            get => this.isPopOpen;
+            set => SetProperty(ref this.isPopOpen, value);
+        }
 
         public Command RegisterCommand { get; }
 
-
         async void OnRegisterClicked()
         {
-            // TO DO CALL REGISTER SERVICE 
+            User user = new User();
 
-            // IF SUCCESSFUL CALL
+            user.Email = Mail;
+            user.Password = Password;
 
-            // TO DO SAVE TOKEN IN REALM IO 
+            var result = await UserService.SaveUserAsync(user, true);
 
-            // THEN GO BACK
-            await Navigation.GoBackAsync();
+            if (result.IsSuccessStatusCode)
+            {
+                IsPopOpen = true;
+                await Task.Delay(1500);
+                IsPopOpen = false;
+                await Task.Delay(500);
+
+                await Navigation.NavigateToAsync<LoginViewModel>(true);
+            }
         }
 
         bool ValidateLogin()

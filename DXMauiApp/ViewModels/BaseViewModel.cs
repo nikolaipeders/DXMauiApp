@@ -11,10 +11,11 @@ namespace DXMauiApp.ViewModels
         bool isBusy = false;
         string title = string.Empty;
 
-
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
 
         public INavigationService Navigation => DependencyService.Get<INavigationService>();
+
+        public IUserRestService UserService => DependencyService.Get<IUserRestService>();
 
         public bool IsBusy
         {
@@ -63,13 +64,14 @@ namespace DXMauiApp.ViewModels
         {
             var authToken = await SecureStorage.Default.GetAsync("auth_token");
 
-            if (authToken == null)
+            System.Diagnostics.Debug.WriteLine("SECURE STORAGE TOKEN IS: " +  authToken);
+
+            if (authToken == null || authToken.Equals(""))
             {
                 // No value is associated with the key "auth_token", so redirect to login
-                // await Navigation.NavigateToAsync<LoginViewModel>(null);
+                 await Navigation.NavigateToAsync<LoginViewModel>(true);
 
             }
         }
-
     }
 }

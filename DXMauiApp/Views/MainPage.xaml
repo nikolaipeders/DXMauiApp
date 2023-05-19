@@ -11,16 +11,16 @@
             <ShellContent ContentTemplate="{DataTemplate local:UnlockPage}" Route= "DXMauiApp.Views.UnlockPage" />
         </Tab>
         <Tab Title ="Browse" Icon="browse">
-            <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" Route= "DXMauiApp.Views.ItemsPage" />
         </Tab>
         <Tab Title="My lock" Icon="shieldlock">
-            <ShellContent ContentTemplate="{DataTemplate local:LockPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:LockPage}" Route= "DXMauiApp.Views.LockPage" />
         </Tab>
         <Tab Title="Account" Icon="accountcircle">
-            <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" Route= "DXMauiApp.Views.AccountPage" />
         </Tab>
         <Tab Title="Login" Icon="accountcircle">
-            <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" />
+            <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" Route= "DXMauiApp.Views.LoginPage" /> 
         </Tab>
         <Tab Title="About" Icon="info">
             <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route= "DXMauiApp.Views.AboutPage"  />

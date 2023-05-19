@@ -15,6 +15,7 @@ namespace DXMauiApp
 
             DependencyService.Register<MockDataStore>();
             DependencyService.Register<NavigationService>();
+            DependencyService.Register<UserRestService>();
 
             Routing.RegisterRoute(typeof(ItemDetailPage).FullName, typeof(ItemDetailPage));
             Routing.RegisterRoute(typeof(NewItemPage).FullName, typeof(NewItemPage));

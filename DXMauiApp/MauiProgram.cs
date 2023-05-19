@@ -5,6 +5,9 @@ using Microsoft.Maui.Controls.Compatibility;
 using Microsoft.Maui.Controls.Compatibility.Hosting;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
+using DXMauiApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Camera.MAUI;
 
 namespace DXMauiApp
 {
@@ -17,6 +20,7 @@ namespace DXMauiApp
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitMediaElement()
+                .UseMauiCameraView()
                 .UseDevExpress(useLocalization: true)
                 .ConfigureFonts(fonts =>
                 {
@@ -27,7 +31,6 @@ namespace DXMauiApp
                     fonts.AddFont("univia-pro-regular.ttf", "Univia-Pro");
                     fonts.AddFont("univia-pro-medium.ttf", "Univia-Pro Medium");
                 });
-
 
             return builder.Build();
         }

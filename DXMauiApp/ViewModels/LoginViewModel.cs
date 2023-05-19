@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls;
+﻿using DXMauiApp.Models;
+using Microsoft.Maui.Controls;
 using System;
 
 namespace DXMauiApp.ViewModels
@@ -7,6 +8,7 @@ namespace DXMauiApp.ViewModels
     {
         string userName;
         string password;
+        bool isPopOpen = false;
 
         public LoginViewModel()
         {
@@ -33,14 +35,36 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.password, value);
         }
 
+        public bool IsPopOpen
+        {
+            get => this.isPopOpen;
+            set => SetProperty(ref this.isPopOpen, value);
+        }
+
         public Command LoginCommand { get; }
         public Command OpenRegisterPageCommand { get; }
 
 
         async void OnLoginClicked()
         {
-            //await SecureStorage.Default.SetAsync("auth_token", "secret-oauth-token-value");
-            await Navigation.NavigateToAsync<UnlockViewModel>(true);
+            User user = new User();
+
+            user.Email = UserName;
+            user.Password = Password;
+
+            var result = await UserService.UserLoginAsync(user);
+
+            if (result != null)
+            {
+                await SecureStorage.Default.SetAsync("auth_token", result);
+
+                IsPopOpen = true;
+                await Task.Delay(1500);
+                IsPopOpen = false;
+                await Task.Delay(500);
+
+                await Navigation.NavigateToAsync<UnlockViewModel>(true);
+            }
         }
 
         bool ValidateLogin()
