@@ -11,16 +11,13 @@
     <ContentPage.Content>
         <VerticalStackLayout VerticalOptions="Center">
 
-            <cv:CameraView 
-                x:Name="cameraView"
-                VerticalOptions="Center"
-                WidthRequest="350"
-                HeightRequest="350"
-                Margin="0, 20, 0, 20"
-                Cameras="{Binding Cameras, Mode=OneWayToSource}" 
-                Camera="{Binding CameraObj}" 
-                NumCamerasDetected="{Binding NumCameras, Mode=OneWayToSource}">
-            </cv:CameraView>
+            <Image 
+                Source="{Binding SnapShot}" 
+                Aspect="AspectFit" 
+                WidthRequest="350" 
+                HeightRequest="350" 
+                HorizontalOptions="Center"
+                Margin="20, 20, 20, 10"/>
 
             <Label
                 Text="{Binding Instructions}"
@@ -35,36 +32,6 @@
                 Command="{Binding TakeSnapshotCmd}"
                 IsEnabled="{Binding ButtonState}">
             </Button>
-
-            <!-- image popup -->
-            <dxco:DXPopup 
-                x:Name="imagePopup"
-                AllowScrim="True"
-                VerticalAlignment="Center"
-                IsOpen="{Binding IsImagePopOpen}"
-                AnimationDuration="00:00:00.500">
-                <VerticalStackLayout 
-                    WidthRequest="300"
-                    VerticalOptions="Center"
-                    BackgroundColor="AliceBlue">
-
-                    <Image 
-                        Source="{Binding SnapShotFromByte}" 
-                        Aspect="AspectFit" 
-                        WidthRequest="250" 
-                        HeightRequest="200" 
-                        HorizontalOptions="Center"
-                        Margin="20, 20, 20, 10"/>
-
-
-                    <Label
-                        VerticalTextAlignment="Center"
-                        HorizontalOptions="Center"
-                        Text="Unlocking door..."
-                        FontSize="14"
-                        Margin="10, 10, 20, 20"/>
-                </VerticalStackLayout>
-            </dxco:DXPopup>
 
             <!-- result popup -->
             <dxco:DXPopup 

@@ -18,13 +18,8 @@ namespace DXMauiApp.ViewModels
         bool buttonState;
         bool isError = false;
         bool isSuccess = false;
-        bool isImagePopOpen = false;
         bool isResultPopOpen = false;
         ImageSource snapShot;
-        ImageSource snapShotFromByte;
-        CameraInfo camera = null;
-        CameraView cameraView;
-        ObservableCollection<CameraInfo> cameras = new();
 
         public string ImageUrl
         {
@@ -54,53 +49,6 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.snapShot, value);
             }
         }
-        public ImageSource SnapShotFromByte
-        {
-            get => this.snapShotFromByte;
-            set
-            {
-                SetProperty(ref this.snapShotFromByte, value);
-            }
-        }
-        public CameraInfo CameraObj
-        {
-            get => camera;
-            set
-            {
-                camera = value;
-                OnPropertyChanged(nameof(CameraObj));
-                CameraView.AutoStartPreview = false;
-                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
-                CameraView.AutoStartPreview = true;
-                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
-            }
-        }
-        public CameraView CameraView
-        {
-            get => cameraView;
-            set
-            {
-                cameraView = value;
-                SetProperty(ref cameraView, value);
-            }
-        }
-        public ObservableCollection<CameraInfo> Cameras
-        {
-            get => cameras;
-            set
-            {
-                cameras = value;
-                OnPropertyChanged(nameof(Cameras));
-            }
-        }
-        public int NumCameras
-        {
-            set
-            {
-                if (value > 0)
-                    CameraObj = Cameras.Last(); // Last is selfie 
-            }
-        }
         public bool IsError
         {
             get => this.isError;
@@ -118,17 +66,6 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-        public bool IsImagePopOpen
-        {
-            get => this.isImagePopOpen;
-            set
-            {
-                SetProperty(ref this.isImagePopOpen, value);
-                CameraView.AutoStartPreview = !isImagePopOpen;
-                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
-            }
-        }
-
         public bool IsResultPopOpen
         {
             get => this.isResultPopOpen;
@@ -137,26 +74,21 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.isResultPopOpen, value);
             }
         }
-
         public Command TakeSnapshotCmd { get; set; }
 
         public UnlockViewModel()
         {
             Title = "Unlock";
-            Instructions = "Point phone towards your face and press button to unlock";
             ButtonState = true;
 
-            TakeSnapshotCmd = new Command(UnlockDoor);
+            TakeSnapshotCmd = new Command(TakePhoto);
         }
 
         public void OnAppearing()
         {
             RedirectToLogin();
 
-            CameraView.AutoStartPreview = false;
-            OnPropertyChanged(nameof(CameraView.AutoStartPreview));
-            CameraView.AutoStartPreview = true;
-            OnPropertyChanged(nameof(CameraView.AutoStartPreview));
+            ResetState();
         }
 
         public async Task<byte[]> ConvertImageSourceToBytesAsync(ImageSource imageSource)
@@ -168,30 +100,53 @@ namespace DXMauiApp.ViewModels
             return bytesAvailable;
         }
 
-        public async void UnlockDoor()
+        public async void TakePhoto()
+        {
+            if (MediaPicker.IsCaptureSupported)
+            {
+
+                FileResult photo = await MediaPicker.CapturePhotoAsync();
+
+                if (photo != null)
+                {
+                    // Save the file into local storage
+                    string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                    using Stream sourceStream = await photo.OpenReadAsync();
+                    using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                    await sourceStream.CopyToAsync(localFileStream);
+
+                    localFileStream.Close();
+
+                    SnapShot = ImageSource.FromFile(localFilePath);
+
+                    // Convert photo file to byte array
+                    byte[] photoBytes = File.ReadAllBytes(localFilePath);
+
+                    // Encode the byte array as base64
+                    string base64Photo = Convert.ToBase64String(photoBytes);
+
+                    Debug.WriteLine("BASE64: " + base64Photo);
+
+                    UnlockDoor(base64Photo);
+                }
+            }
+        }
+
+        public async void UnlockDoor(string base64)
         {
             // Prepare sound effects
             AudioManager am = new AudioManager();
 
-            // Save Image
-            SnapShot = CameraView.GetSnapShot(Camera.MAUI.ImageFormat.PNG);
-
-            var byteResult = await ConvertImageSourceToBytesAsync(SnapShot);
-
-            var base64String = Convert.ToBase64String(byteResult);
-
-            SnapShotFromByte = ImageSource.FromStream(() => new MemoryStream(byteResult));
-
-            Debug.WriteLine("BASE64: " + base64String);
-
-            // Show picture
+            // State handling
             ButtonState = false;
-            IsImagePopOpen = true;
+            Instructions = "Verifying face ...";
 
-            // Do REST magic 
-            await Task.Delay(1500);
+            // Do REST magic
+            await Task.Delay(3000);
 
-            // IF SUCCESS 
+            // IF SUCCESS
             ImageUrl = "door.png";
             ImageDescription = "Door unlocked!";
             var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
@@ -203,15 +158,23 @@ namespace DXMauiApp.ViewModels
             //var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
             //audioError.Play();
 
-            // Show status of call 
-            IsImagePopOpen = false;
+            // Show status of call
             IsResultPopOpen = true;
 
             // Return
-            await Task.Delay(2000);
-            IsResultPopOpen = false;
-            ButtonState = true;
+            await Task.Delay(3000);
+
+            // Reset state
+            ResetState();
         }
 
+        public void ResetState()
+        {
+            IsResultPopOpen = false;
+            ButtonState = true;
+
+            Instructions = "Point phone towards your face and press button to unlock";
+            SnapShot = "smartdoor.png";
+        }
     }
 }
