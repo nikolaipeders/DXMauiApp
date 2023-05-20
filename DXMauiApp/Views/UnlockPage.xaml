@@ -9,17 +9,7 @@
              IconImageSource="grid"
              x:Class= "DXMauiApp.Views.UnlockPage">
     <ContentPage.Content>
-        <VerticalStackLayout VerticalOptions="Center" >
-
-            <!--<Image
-                Source="{Binding ImageUrl}"
-                SemanticProperties.Description="Door"
-                HeightRequest="100"
-                WidthRequest="100"
-                HorizontalOptions="Center"
-                Scale="{Binding Scale}"
-                x:Name="doorImage">
-            </Image>-->
+        <VerticalStackLayout VerticalOptions="Center">
 
             <cv:CameraView 
                 x:Name="cameraView"
@@ -29,18 +19,14 @@
                 Margin="0, 20, 0, 20"
                 Cameras="{Binding Cameras, Mode=OneWayToSource}" 
                 Camera="{Binding CameraObj}" 
-                AutoStartPreview="{Binding AutoStartPreview}" 
-                NumCamerasDetected="{Binding NumCameras, Mode=OneWayToSource}"
-                AutoSnapShotAsImageSource="True" 
-                AutoSnapShotFormat="PNG" 
-                TakeAutoSnapShot="{Binding TakeSnapshot}">
+                NumCamerasDetected="{Binding NumCameras, Mode=OneWayToSource}">
             </cv:CameraView>
 
             <Label
-                    Text="{Binding Instructions}"
-                    FontSize="14"
-                    HorizontalOptions="Center"
-                    Margin="20">
+                Text="{Binding Instructions}"
+                FontSize="14"
+                HorizontalOptions="Center"
+                Margin="20">
             </Label>
 
             <Button
@@ -63,8 +49,7 @@
                     BackgroundColor="AliceBlue">
 
                     <Image 
-                        BindingContext="{x:Reference cameraView}" 
-                        Source="{Binding SnapShot}" 
+                        Source="{Binding SnapShotFromByte}" 
                         Aspect="AspectFit" 
                         WidthRequest="250" 
                         HeightRequest="200" 
@@ -100,7 +85,6 @@
                         HeightRequest="200" 
                         HorizontalOptions="Center"
                         Margin="20, 20, 20, 10"/>
-
 
                     <Label
                         VerticalTextAlignment="Center"

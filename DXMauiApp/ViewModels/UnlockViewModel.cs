@@ -21,10 +21,10 @@ namespace DXMauiApp.ViewModels
         bool isImagePopOpen = false;
         bool isResultPopOpen = false;
         ImageSource snapShot;
-        CameraInfo camera;
-        CameraView cameraView = new();
+        ImageSource snapShotFromByte;
+        CameraInfo camera = null;
+        CameraView cameraView;
         ObservableCollection<CameraInfo> cameras = new();
-        bool takeSnapshot = false;
 
         public string ImageUrl
         {
@@ -54,6 +54,14 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.snapShot, value);
             }
         }
+        public ImageSource SnapShotFromByte
+        {
+            get => this.snapShotFromByte;
+            set
+            {
+                SetProperty(ref this.snapShotFromByte, value);
+            }
+        }
         public CameraInfo CameraObj
         {
             get => camera;
@@ -61,10 +69,10 @@ namespace DXMauiApp.ViewModels
             {
                 camera = value;
                 OnPropertyChanged(nameof(CameraObj));
-                AutoStartPreview = false;
-                OnPropertyChanged(nameof(AutoStartPreview));
-                AutoStartPreview = true;
-                OnPropertyChanged(nameof(AutoStartPreview));
+                CameraView.AutoStartPreview = false;
+                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
+                CameraView.AutoStartPreview = true;
+                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
             }
         }
         public CameraView CameraView
@@ -93,16 +101,6 @@ namespace DXMauiApp.ViewModels
                     CameraObj = Cameras.Last(); // Last is selfie 
             }
         }
-        public bool AutoStartPreview { get; set; } = false;
-        public bool TakeSnapshot
-        {
-            get => takeSnapshot;
-            set
-            {
-                takeSnapshot = value;
-                OnPropertyChanged(nameof(TakeSnapshot));
-            }
-        }
         public bool IsError
         {
             get => this.isError;
@@ -126,8 +124,8 @@ namespace DXMauiApp.ViewModels
             set
             {
                 SetProperty(ref this.isImagePopOpen, value);
-                AutoStartPreview = !isImagePopOpen;
-                OnPropertyChanged(nameof(AutoStartPreview));
+                CameraView.AutoStartPreview = !isImagePopOpen;
+                OnPropertyChanged(nameof(CameraView.AutoStartPreview));
             }
         }
 
@@ -151,9 +149,14 @@ namespace DXMauiApp.ViewModels
             TakeSnapshotCmd = new Command(UnlockDoor);
         }
 
-        async public void OnAppearing()
+        public void OnAppearing()
         {
             RedirectToLogin();
+
+            CameraView.AutoStartPreview = false;
+            OnPropertyChanged(nameof(CameraView.AutoStartPreview));
+            CameraView.AutoStartPreview = true;
+            OnPropertyChanged(nameof(CameraView.AutoStartPreview));
         }
 
         public async Task<byte[]> ConvertImageSourceToBytesAsync(ImageSource imageSource)
@@ -170,16 +173,14 @@ namespace DXMauiApp.ViewModels
             // Prepare sound effects
             AudioManager am = new AudioManager();
 
-            // Take picture 
-            TakeSnapshot = true;
-            TakeSnapshot = false;
-
             // Save Image
-            var imageSource = CameraView.SnapShot;
+            SnapShot = CameraView.GetSnapShot(Camera.MAUI.ImageFormat.PNG);
 
-            var byteResult = await ConvertImageSourceToBytesAsync(imageSource);
+            var byteResult = await ConvertImageSourceToBytesAsync(SnapShot);
 
             var base64String = Convert.ToBase64String(byteResult);
+
+            SnapShotFromByte = ImageSource.FromStream(() => new MemoryStream(byteResult));
 
             Debug.WriteLine("BASE64: " + base64String);
 
@@ -188,7 +189,7 @@ namespace DXMauiApp.ViewModels
             IsImagePopOpen = true;
 
             // Do REST magic 
-            await Task.Delay(3000);
+            await Task.Delay(1500);
 
             // IF SUCCESS 
             ImageUrl = "door.png";

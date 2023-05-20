@@ -11,8 +11,8 @@ namespace DXMauiApp.Views
         {
             InitializeComponent();
             BindingContext = ViewModel = new UnlockViewModel();
-            ViewModel.OnAppearing();
             ViewModel.CameraView = cameraView;
+            ViewModel.OnAppearing();
         }
 
         UnlockViewModel ViewModel { get; }

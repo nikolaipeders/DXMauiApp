@@ -8,7 +8,7 @@
         x:Class= "DXMauiApp.Views.MainPage">
     <TabBar>
         <Tab Title="Unlock" Icon="dooropen">
-            <ShellContent ContentTemplate="{DataTemplate local:UnlockPage}" Route= "DXMauiApp.Views.UnlockPage" />
+            <ShellContent ContentTemplate="{DataTemplate local:UnlockPage}" Route= "DXMauiApp.Views.UnlockPage"/>
         </Tab>
         <Tab Title ="Browse" Icon="browse">
             <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" Route= "DXMauiApp.Views.ItemsPage" />
