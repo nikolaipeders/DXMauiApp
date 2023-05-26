@@ -1,7 +1,11 @@
 ﻿using DevExpress.Data.Mask.Internal;
 using DXMauiApp.Models;
+using DXMauiApp.Services;
 using Microsoft.Maui.Controls;
+using Plugin.Maui.Audio;
 using System;
+using System.Buffers.Text;
+using System.Diagnostics;
 using System.Security;
 
 namespace DXMauiApp.ViewModels
@@ -9,22 +13,123 @@ namespace DXMauiApp.ViewModels
     public class AccountViewModel : BaseViewModel
     {
         string userName;
+        public string UserName
+        {
+            get => this.userName;
+            set => SetProperty(ref this.userName, value);
+        }
+
         string mail;
+        public string Mail
+        {
+            get => this.mail;
+            set => SetProperty(ref this.mail, value);
+        }
+
         string password;
+        public string Password
+        {
+            get => this.password;
+            set => SetProperty(ref this.password, value);
+        }
+
         string confirmPassword;
-        string rfid;
+        public string ConfirmPassword
+        {
+            get => this.confirmPassword;
+            set => SetProperty(ref this.confirmPassword, value);
+        }
+
+        string imageBase64;
+        public string ImageBase64
+        {
+            get => this.imageBase64;
+            set => SetProperty(ref this.imageBase64, value);
+        }
+
+        string imageUrl;
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+        
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+        
+        string instructions;
+        public string Instructions
+        {
+            get => this.instructions;
+            set => SetProperty(ref this.instructions, value);
+        }
+        
+        bool buttonState;
+        public bool ButtonState
+        {
+            get => this.buttonState;
+            set => SetProperty(ref this.buttonState, value);
+        }
+        
+        ImageSource snapShot;
+        public ImageSource SnapShot
+        {
+            get => this.snapShot;
+            set
+            {
+                SetProperty(ref this.snapShot, value);
+            }
+        }
+        
+        bool isError = false;
+        public bool IsError
+        {
+            get => this.isError;
+            set
+            {
+                SetProperty(ref this.isError, value);
+            }
+        }
+        
+        bool isSuccess = false;
+        public bool IsSuccess
+        {
+            get => this.isSuccess;
+            set
+            {
+                SetProperty(ref this.isSuccess, value);
+            }
+        }
+        
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
+        }
+
+        public Command TakePictureCommand { get; }
+        public Command UpdateCommand { get; }
+        public Command SignOutCommand { get; }
 
         public AccountViewModel()
         {
             Title = "My account";
 
-            UpdateCommand = new Command(OnUpdateClicked, ValidateLogin);
-            PropertyChanged +=
-                (_, __) => UpdateCommand.ChangeCanExecute();
+            ButtonState = true;
 
+            UpdateCommand = new Command(OnUpdateClicked);
+
+            TakePictureCommand = new Command(TakePhoto);
+            
             SignOutCommand = new Command(OnSignOutClicked);
-            PropertyChanged +=
-            (_, __) => SignOutCommand.ChangeCanExecute();
 
         }
 
@@ -32,63 +137,99 @@ namespace DXMauiApp.ViewModels
         {
             RedirectToLogin();
 
-            // TO DO GET RFID OF PHONE
+            SnapShot = "user.png";
 
         }
 
-        public string UserName
+        public async void TakePhoto()
         {
-            get => this.userName;
-            set => SetProperty(ref this.userName, value);
+            if (MediaPicker.IsCaptureSupported)
+            {
+
+                FileResult photo = await MediaPicker.CapturePhotoAsync();
+
+                if (photo != null)
+                {
+                    // Save the file into local storage
+                    string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                    using Stream sourceStream = await photo.OpenReadAsync();
+                    using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                    await sourceStream.CopyToAsync(localFileStream);
+
+                    localFileStream.Close();
+
+                    SnapShot = ImageSource.FromFile(localFilePath);
+
+                    // Convert photo file to byte array
+                    byte[] photoBytes = File.ReadAllBytes(localFilePath);
+
+                    // Encode the byte array as base64
+                    ImageBase64 = Convert.ToBase64String(photoBytes);
+
+                    Debug.WriteLine("BASE64: " + ImageBase64);
+
+                }
+            }
         }
-
-        public string Mail
-        {
-            get => this.mail;
-            set => SetProperty(ref this.mail, value);
-        }
-
-        public string Password
-        {
-            get => this.password;
-            set => SetProperty(ref this.password, value);
-        }
-
-        public string ConfirmPassword
-        {
-            get => this.confirmPassword;
-            set => SetProperty(ref this.confirmPassword, value);
-        }
-
-        public string RFID
-        {
-            get => this.rfid;
-            set => SetProperty(ref this.rfid, value);
-        }
-
-        public Command UpdateCommand { get; }
-        public Command SignOutCommand { get; }
-
 
         async void OnUpdateClicked()
         {
-            // TO DO CALL REGISTER SERVICE 
+            // Prepare sound effects
+            AudioManager am = new AudioManager();
 
-            // IF SUCCESSFUL CALL
+            // State handling
+            ButtonState = false;
 
-            // TO DO SAVE TOKEN IN REALM IO 
+            // Do REST magic
+            User user = new User();
 
-            // THEN GO BACK
-            await Navigation.GoBackAsync();
+            user.Email = Mail;
+            user.Password = Password;
+            if (ImageBase64 != null && ImageBase64.Length > 5)
+            {
+                user.ImageBase64 = "data:image/jpeg;base64," + ImageBase64;
+            }
+            else
+            {
+                user.ImageBase64 = "data:image/jpeg;base64," + "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+            }
+
+            var result = await UserService.SaveUserAsync(user, false);
+
+            // IF SUCCESS
+            if (result.IsSuccessStatusCode)
+            {
+                ImageUrl = "checked.png";
+                ImageDescription = "Account updated!";
+                var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                audioSuccess.Play();
+            }
+
+            // IF FAIL
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error";
+                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                audioError.Play();
+            }
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(3000);
+
+            // Reset state
+            ResetState();
         }
 
-        bool ValidateLogin()
+        public void ResetState()
         {
-            return !String.IsNullOrWhiteSpace(UserName)
-                && !String.IsNullOrWhiteSpace(Mail)
-                && !String.IsNullOrWhiteSpace(Password)
-                && !String.IsNullOrWhiteSpace(ConfirmPassword)
-                && Password.Equals(ConfirmPassword);
+            IsResultPopOpen = false;
+            ButtonState = true;
         }
 
         async void OnSignOutClicked()

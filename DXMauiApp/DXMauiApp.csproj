@@ -42,7 +42,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\camicon.png" />
+	  <None Remove="Resources\Images\checked.png" />
 	  <None Remove="Resources\Images\dooricon.png" />
+	  <None Remove="Resources\Images\user.png" />
 	  <None Remove="Resources\Raw\alert.mp3" />
 	  <None Remove="Resources\Images\accountcircle.svg" />
 	  <None Remove="Resources\Images\door.png" />
@@ -61,7 +64,6 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Camera.MAUI" Version="1.4.1" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="5.1.0" />
 		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.1.0" />
 		<PackageReference Include="CommunityToolkit.Maui.MediaElement" Version="1.0.2" />

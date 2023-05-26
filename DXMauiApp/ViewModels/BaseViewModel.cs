@@ -1,5 +1,6 @@
 ﻿using DXMauiApp.Models;
 using DXMauiApp.Services;
+using DXMauiApp.Views;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -29,6 +30,12 @@ namespace DXMauiApp.ViewModels
             set { SetProperty(ref this.title, value); }
         }
 
+        string baseToken = string.Empty;
+        public string BaseToken
+        {
+            get { return this.baseToken; }
+            set { SetProperty(ref this.baseToken, value); }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -62,15 +69,30 @@ namespace DXMauiApp.ViewModels
 
         public async void RedirectToLogin()
         {
-            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+            BaseToken = await SecureStorage.Default.GetAsync("auth_token");
 
-            System.Diagnostics.Debug.WriteLine("SECURE STORAGE TOKEN IS: " +  authToken);
+            System.Diagnostics.Debug.WriteLine("SECURE STORAGE TOKEN IS: " + BaseToken);
 
-            if (authToken == null || authToken.Equals(""))
+            if (BaseToken == null || BaseToken.Equals(""))
             {
                 // No value is associated with the key "auth_token", so redirect to login
-                 await Navigation.NavigateToAsync<LoginViewModel>(true);
+                await Navigation.NavigateToAsync<LoginViewModel>(false);
+            }
+            else
+            {
+                TokenRequest request = new TokenRequest();
 
+                request.Token = BaseToken.Replace("\"", "");
+
+                var result = await UserService.UserConfirmAccessAsync(request);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    await SecureStorage.Default.SetAsync("auth_token", "");
+
+                    await Navigation.NavigateToAsync<LoginViewModel>(false);
+
+                }
             }
         }
     }

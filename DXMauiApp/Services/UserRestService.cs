@@ -1,4 +1,5 @@
 ﻿using DXMauiApp.Models;
+using DXMauiApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,28 +29,45 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> SaveUserAsync(User user, bool isNewItem = false)
         {
-            Uri uri = new Uri(string.Format(baseUrl + "UserCreate"));
+            Uri postUri = new Uri(string.Format(baseUrl + "UserCreate"));
+            Uri putUri = new Uri(string.Format(baseUrl + "UserUpdate"));
 
             try
             {
-                string json = JsonSerializer.Serialize<User>(user, _serializerOptions);
+                string json;
+                if (isNewItem)
+                {
+                    json = JsonSerializer.Serialize(user, _serializerOptions);
+                }
+                else
+                {
+                    var jsonObject = new
+                    {
+                        email = user.Email,
+                        new_email = user.Email,
+                        new_password = user.Password,
+                        new_image_data = user.ImageBase64
+                    };
+                    json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
+                }
+
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = null;
 
                 if (isNewItem)
-                    response = await _client.PostAsync(uri, content);
-
+                    response = await _client.PostAsync(postUri, content);
                 else
-                    response = await _client.PutAsync(uri, content);
+                    response = await _client.PostAsync(putUri, content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("User successfully saved.");
                     return response;
                 }
-                return (response);
-
+                Debug.WriteLine($"{response.StatusCode}");
+                Debug.WriteLine("REPONSE IS ALSO: " + response);
+                return response;
             }
             catch (Exception ex)
             {
@@ -57,6 +75,7 @@ namespace DXMauiApp.Services
                 return null;
             }
         }
+
 
         public async Task<string> UserLoginAsync(User user)
         {
@@ -110,6 +129,39 @@ namespace DXMauiApp.Services
                 Debug.WriteLine("ERROR: " + ex.Message);
                 return null;
             }
+        }
+
+        public async Task<HttpResponseMessage> UserConfirmAccessAsync(TokenRequest request)
+        {
+            Uri uri = new Uri(string.Format(baseUrl + "UserAccessTest"));
+
+            try
+            {
+                Debug.WriteLine("MODEL IS " + request.Token);
+
+                string json = JsonSerializer.Serialize<TokenRequest>(request, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("User has access.");
+                    return response;
+                }
+                Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ERROR: " + ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<User> GetUserByTokenAsync(string token)
+        {
+            return new User();
         }
     }
 }

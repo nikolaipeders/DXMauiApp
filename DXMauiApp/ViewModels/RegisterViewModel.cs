@@ -11,7 +11,6 @@ namespace DXMauiApp.ViewModels
         string mail;
         string password;
         string confirmPassword;
-        string rfid;
         bool isPopOpen = false;
 
         public RegisterViewModel()
@@ -45,11 +44,6 @@ namespace DXMauiApp.ViewModels
         {
             get => this.confirmPassword;
             set => SetProperty(ref this.confirmPassword, value);
-        }
-        public string RFID
-        {
-            get => this.rfid;
-            set => SetProperty(ref this.rfid, value);
         }
         public bool IsPopOpen
         {

@@ -16,7 +16,7 @@ namespace DXMauiApp.ViewModels
 
             LoginCommand = new Command(OnLoginClicked, ValidateLogin);
 
-            OpenRegisterPageCommand = new Command(async () => await Navigation.NavigateToAsync<RegisterViewModel>(null));
+            OpenRegisterPageCommand = new Command(async () => await Navigation.NavigateToAsync<RegisterViewModel>(false));
 
             PropertyChanged +=
                 (_, __) => LoginCommand.ChangeCanExecute();

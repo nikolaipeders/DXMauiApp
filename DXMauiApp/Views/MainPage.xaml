@@ -19,11 +19,9 @@
         <Tab Title="Account" Icon="accountcircle">
             <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" Route= "DXMauiApp.Views.AccountPage" />
         </Tab>
-        <Tab Title="Login" Icon="accountcircle">
-            <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" Route= "DXMauiApp.Views.LoginPage" /> 
-        </Tab>
-        <Tab Title="About" Icon="info">
-            <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route= "DXMauiApp.Views.AboutPage"  />
-        </Tab>
+        <!--<Tab Title="Login" Icon="grid">
+            <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" Route= "DXMauiApp.Views.LoginPage"/>
+        </Tab>-->
     </TabBar>
+
 </Shell>

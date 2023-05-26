@@ -1,5 +1,4 @@
-﻿using Camera.MAUI;
-using DXMauiApp.Models;
+﻿using DXMauiApp.Models;
 using DXMauiApp.Services;
 using Plugin.Maui.Audio;
 using System;
@@ -13,34 +12,35 @@ namespace DXMauiApp.ViewModels
     public class UnlockViewModel : BaseViewModel
     {
         string imageUrl;
-        string imageDescription;
-        string instructions;
-        bool buttonState;
-        bool isError = false;
-        bool isSuccess = false;
-        bool isResultPopOpen = false;
-        ImageSource snapShot;
 
         public string ImageUrl
         {
             get => this.imageUrl;
             set => SetProperty(ref this.imageUrl, value);
         }
+
+        string imageDescription;
         public string ImageDescription
         {
             get => this.imageDescription;
             set => SetProperty(ref this.imageDescription, value);
         }
+
+        string instructions;
         public string Instructions
         {
             get => this.instructions;
             set => SetProperty(ref this.instructions, value);
         }
+
+        bool buttonState;
         public bool ButtonState
         {
             get => this.buttonState;
             set => SetProperty(ref this.buttonState, value);
         }
+
+        ImageSource snapShot;
         public ImageSource SnapShot
         {
             get => this.snapShot;
@@ -49,6 +49,8 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.snapShot, value);
             }
         }
+
+        bool isError = false;
         public bool IsError
         {
             get => this.isError;
@@ -57,6 +59,8 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.isError, value);
             }
         }
+
+        bool isSuccess = false;
         public bool IsSuccess
         {
             get => this.isSuccess;
@@ -66,6 +70,7 @@ namespace DXMauiApp.ViewModels
             }
         }
 
+        bool isResultPopOpen = false;
         public bool IsResultPopOpen
         {
             get => this.isResultPopOpen;
@@ -89,15 +94,6 @@ namespace DXMauiApp.ViewModels
             RedirectToLogin();
 
             ResetState();
-        }
-
-        public async Task<byte[]> ConvertImageSourceToBytesAsync(ImageSource imageSource)
-        {
-            Stream stream = await ((StreamImageSource)imageSource).Stream(CancellationToken.None);
-            byte[] bytesAvailable = new byte[stream.Length];
-            await stream.ReadAsync(bytesAvailable, 0, bytesAvailable.Length);
-
-            return bytesAvailable;
         }
 
         public async void TakePhoto()

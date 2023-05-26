@@ -7,7 +7,6 @@ using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 using DXMauiApp.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Camera.MAUI;
 
 namespace DXMauiApp
 {
@@ -20,7 +19,6 @@ namespace DXMauiApp
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitMediaElement()
-                .UseMauiCameraView()
                 .UseDevExpress(useLocalization: true)
                 .ConfigureFonts(fonts =>
                 {
