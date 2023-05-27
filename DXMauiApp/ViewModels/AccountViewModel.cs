@@ -1,4 +1,5 @@
 ﻿using DevExpress.Data.Mask.Internal;
+using DevExpress.Services.Implementation;
 using DXMauiApp.Models;
 using DXMauiApp.Services;
 using Microsoft.Maui.Controls;
@@ -125,6 +126,8 @@ namespace DXMauiApp.ViewModels
 
             ButtonState = true;
 
+            GetDetails();
+
             UpdateCommand = new Command(OnUpdateClicked);
 
             TakePictureCommand = new Command(TakePhoto);
@@ -137,8 +140,7 @@ namespace DXMauiApp.ViewModels
         {
             RedirectToLogin();
 
-            SnapShot = "user.png";
-
+            GetDetails();
         }
 
         public async void TakePhoto()
@@ -189,11 +191,7 @@ namespace DXMauiApp.ViewModels
             user.Password = Password;
             if (ImageBase64 != null && ImageBase64.Length > 5)
             {
-                user.ImageBase64 = "data:image/jpeg;base64," + ImageBase64;
-            }
-            else
-            {
-                user.ImageBase64 = "data:image/jpeg;base64," + "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+                user.Image = "data:image/jpeg;base64," + ImageBase64;
             }
 
             var result = await UserService.SaveUserAsync(user, false);
@@ -220,7 +218,7 @@ namespace DXMauiApp.ViewModels
             IsResultPopOpen = true;
 
             // Return
-            await Task.Delay(3000);
+            await Task.Delay(1500);
 
             // Reset state
             ResetState();
@@ -230,6 +228,31 @@ namespace DXMauiApp.ViewModels
         {
             IsResultPopOpen = false;
             ButtonState = true;
+        }
+
+        public async void GetDetails()
+        {
+            TokenRequest request = new TokenRequest();
+
+            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+
+            request.Token = authToken.Replace("\"", "");
+
+            User user = await UserService.GetUserByTokenAsync(request);
+
+            if (user != null)
+            {
+                Mail = user.Email;
+
+                if (user.Image != null)
+                {
+                    SnapShot = user.Image;
+                }
+                else
+                {
+                    SnapShot = "user.png";
+                }
+            }
         }
 
         async void OnSignOutClicked()

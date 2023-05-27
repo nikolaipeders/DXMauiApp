@@ -46,7 +46,7 @@ namespace DXMauiApp.Services
                         email = user.Email,
                         new_email = user.Email,
                         new_password = user.Password,
-                        new_image_data = user.ImageBase64
+                        new_image_data = user.Image
                     };
                     json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
                 }
@@ -159,9 +159,45 @@ namespace DXMauiApp.Services
             }
         }
 
-        public async Task<User> GetUserByTokenAsync(string token)
+        public async Task<User> GetUserByTokenAsync(TokenRequest request)
         {
-            return new User();
+            Uri uri = new Uri(string.Format(baseUrl + "UserGetInfo"));
+            User user = new User();
+
+            try
+            {
+                Debug.WriteLine("MODEL IS " + request.Token);
+
+                string json = JsonSerializer.Serialize<TokenRequest>(request, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    };
+
+                    user = JsonSerializer.Deserialize<User>(responseContent, serializerOptions);
+
+
+
+                    Debug.WriteLine("RESULT IS: " + user.Email);
+                    return user;
+                }
+
+                Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ERROR: " + ex.Message);
+            }
+
+            return null;
         }
     }
 }
