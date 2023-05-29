@@ -6,29 +6,30 @@
              windows:Application.ImageDirectory="Assets">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#512BD4</Color>
+            <Color x:Key="Primary">#FFD52E</Color>
             <Color x:Key="NormalText">#55575c</Color>
             <Color x:Key="NormalHeaderText">#55575c</Color>
             <Color x:Key="NormalLightText">#959aa0</Color>
-            <Color x:Key="TitleTextColor">White</Color>
-            <Color x:Key="NormalBackgroundColor">White</Color>
+            <Color x:Key="TitleTextColor">white</Color>
+            <Color x:Key="NormalBackgroundColor">white</Color>
+            <Color x:Key="Apple">#0062cc</Color>
             <Color x:Key="AlertBackgroundColor">#E23636</Color>
             <Style TargetType="NavigationPage">
                 <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}"/>
                 <Setter Property="BarTextColor" Value="White"/>
             </Style>
             <Style x:Key="PrimaryButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{StaticResource Primary}"/>
-                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource Apple}"/>
+                <Setter Property="TextColor" Value="{StaticResource TitleTextColor}"/>
             </Style>
             <Style x:Key="AlertButton" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="{StaticResource AlertBackgroundColor}"/>
                 <Setter Property="TextColor" Value="White"/>
             </Style>
             <Style x:Key="ShellStyle" TargetType="Element">
-                <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.TitleColor" Value="{StaticResource TitleTextColor}" />
-                <Setter Property="Shell.ForegroundColor" Value="{StaticResource TitleTextColor}" />
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource NormalBackgroundColor}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource Primary}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource NormalBackgroundColor}" />
                 <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource Primary}" />

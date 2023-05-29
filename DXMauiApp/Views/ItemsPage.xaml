@@ -4,11 +4,20 @@
              xmlns:dxcv="clr-namespace:DevExpress.Maui.CollectionView;assembly=DevExpress.Maui.CollectionView"
              xmlns:local="clr-namespace:DXMauiApp.ViewModels"
              xmlns:model="clr-namespace:DXMauiApp.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="{Binding Title}"
              IconImageSource="browse"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              ios:Page.UseSafeArea="true"
              x:Class= "DXMauiApp.Views.ItemsPage">
+
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="white" StatusBarStyle="DarkContent" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Invites (0)" Command="{Binding AddItemCommand}" />
+    </ContentPage.ToolbarItems>
 
     <ContentPage.Content>
         <VerticalStackLayout>

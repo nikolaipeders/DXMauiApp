@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using Plugin.Maui.Audio;
+using System.Diagnostics;
+using System.Web;
 
 namespace DXMauiApp.ViewModels
 {
@@ -6,24 +8,102 @@ namespace DXMauiApp.ViewModels
     {
         public const string ViewName = "ItemDetailPage";
 
-        string text;
-        string description;
-        string redButtonText;
-
-
         public string Id { get; set; }
 
-        public string Text
+        string lockTitle;
+        public string LockTitle
         {
-            get => this.text;
-            set => SetProperty(ref this.text, value);
+            get => this.lockTitle;
+            set => SetProperty(ref this.lockTitle, value);
         }
 
+        string description;
         public string Description
         {
             get => this.description;
             set => SetProperty(ref this.description, value);
         }
+
+        string imageUrl;
+
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+
+        string instructions;
+        public string Instructions
+        {
+            get => this.instructions;
+            set => SetProperty(ref this.instructions, value);
+        }
+
+        bool buttonState;
+        public bool ButtonState
+        {
+            get => this.buttonState;
+            set => SetProperty(ref this.buttonState, value);
+        }
+
+        ImageSource snapShot;
+        public ImageSource SnapShot
+        {
+            get => this.snapShot;
+            set
+            {
+                SetProperty(ref this.snapShot, value);
+            }
+        }
+
+        bool isError = false;
+        public bool IsError
+        {
+            get => this.isError;
+            set
+            {
+                SetProperty(ref this.isError, value);
+            }
+        }
+
+        bool isSuccess = false;
+        public bool IsSuccess
+        {
+            get => this.isSuccess;
+            set
+            {
+                SetProperty(ref this.isSuccess, value);
+            }
+        }
+
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
+        }
+
+        bool isActionSheetOpen = false;
+        public bool IsActionSheetOpen
+        {
+            get => this.isActionSheetOpen;
+            set
+            {
+                SetProperty(ref this.isActionSheetOpen, value);
+            }
+        }
+
+        string redButtonText;
         public string RedButtonText
         {
             get => this.redButtonText;
@@ -33,9 +113,20 @@ namespace DXMauiApp.ViewModels
             }
         }
 
+        public Command TakeSnapshotCmd { get; set; }
+        public Command OpenActionSheetCmd { get; set; }
+
         public ItemDetailViewModel()
         {
-            RedButtonText = "Remove access";
+            RedButtonText = "Leave lock";
+            ButtonState = true;
+
+            TakeSnapshotCmd = new Command(TakePhoto);
+
+            OpenActionSheetCmd = new Command(() =>
+            {
+                IsActionSheetOpen = !IsActionSheetOpen;
+            });
         }
 
         public async Task LoadItemId(string itemId)
@@ -44,7 +135,7 @@ namespace DXMauiApp.ViewModels
             {
                 var item = await DataStore.GetItemAsync(itemId);
                 Id = item.Id;
-                Text = item.Text;
+                LockTitle = item.Text;
                 Description = item.Description;
             }
             catch (Exception)
@@ -58,10 +149,94 @@ namespace DXMauiApp.ViewModels
             await LoadItemId(parameter as string);
         }
 
+        public void OnAppearing()
+        {
+            RedirectToLogin();
+
+            ResetState();
+        }
+
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             string id = HttpUtility.UrlDecode(query["id"] as string);
             await LoadItemId(id);
+        }
+
+        public async void TakePhoto()
+        {
+            if (MediaPicker.IsCaptureSupported)
+            {
+
+                FileResult photo = await MediaPicker.CapturePhotoAsync();
+
+                if (photo != null)
+                {
+                    // Save the file into local storage
+                    string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                    using Stream sourceStream = await photo.OpenReadAsync();
+                    using FileStream localFileStream = File.OpenWrite(localFilePath);
+
+                    await sourceStream.CopyToAsync(localFileStream);
+
+                    localFileStream.Close();
+
+                    SnapShot = ImageSource.FromFile(localFilePath);
+
+                    // Convert photo file to byte array
+                    byte[] photoBytes = File.ReadAllBytes(localFilePath);
+
+                    // Encode the byte array as base64
+                    string base64Photo = Convert.ToBase64String(photoBytes);
+
+                    Debug.WriteLine("BASE64: " + base64Photo);
+
+                    UnlockDoor(base64Photo);
+                }
+            }
+        }
+
+        public async void UnlockDoor(string base64)
+        {
+            // Prepare sound effects
+            AudioManager am = new AudioManager();
+
+            // State handling
+            ButtonState = false;
+            Instructions = "Verifying face ...";
+
+            // Do REST magic
+            await Task.Delay(3000);
+
+            // IF SUCCESS
+            ImageUrl = "door.png";
+            ImageDescription = "Door unlocked!";
+            var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+            audioSuccess.Play();
+
+            // IF FAIL
+            //ImageUrl = "error.png";
+            //ImageDescription = "Access denied";
+            //var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+            //audioError.Play();
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(3000);
+
+            // Reset state
+            ResetState();
+        }
+
+        public void ResetState()
+        {
+            IsResultPopOpen = false;
+            ButtonState = true;
+            Title = LockTitle;
+            Instructions = "Point phone towards your face and press button to unlock";
+            SnapShot = "smartdoor.png";
         }
     }
 }

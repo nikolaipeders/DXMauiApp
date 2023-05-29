@@ -63,7 +63,7 @@ namespace DXMauiApp.ViewModels
                 IsPopOpen = false;
                 await Task.Delay(500);
 
-                await Navigation.NavigateToAsync<UnlockViewModel>(true);
+                await Navigation.NavigateToAsync<ItemsViewModel>(true);
             }
         }
 

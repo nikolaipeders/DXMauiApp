@@ -87,9 +87,6 @@
 	  <Compile Update="Views\LockPage.xaml.cs">
 	    <DependentUpon>LockPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\UnlockPage.xaml.cs">
-	    <DependentUpon>UnlockPage.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\RegisterPage.xaml.cs">
 	    <DependentUpon>RegisterPage.xaml</DependentUpon>
 	  </Compile>
