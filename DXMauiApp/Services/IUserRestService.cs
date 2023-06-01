@@ -14,8 +14,6 @@ namespace DXMauiApp.Services
         Task<string> UserLoginAsync(User user);
         Task<HttpResponseMessage> UserSignOutAsync(TokenRequest request);
         Task<HttpResponseMessage> UserConfirmAccessAsync(TokenRequest request);
-
-
-
+        Task<HttpResponseMessage> VerifyUserByFaceAsync(User user);
     }
 }

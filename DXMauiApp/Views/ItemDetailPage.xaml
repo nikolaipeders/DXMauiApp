@@ -41,10 +41,9 @@
         </Button>
 
         <Button
-            Text="{Binding RedButtonText}"
+            Text="Leave lock"
             Margin="0, 20, 0, 0"
             Style="{StaticResource AlertButton}"
-            IsEnabled="{Binding ButtonState}"
             Command="{Binding OpenActionSheetCmd}">
         </Button>
 
@@ -76,22 +75,25 @@
                         Margin="10, 10, 20, 20"/>
             </VerticalStackLayout>
         </dxco:DXPopup>
-        
+
         <!-- action sheet -->
-        <dxco:DXPopup IsOpen="{Binding IsActionSheetOpen}"
-                         AllowScrim="True" 
-                         VerticalAlignment="Bottom"
-                         HorizontalAlignment="Stretch"
-                         Margin="16"
-                         CornerRadius="16">
+        <dxco:DXPopup 
+            IsOpen="{Binding IsActionSheetOpen}"
+            AllowScrim="True" 
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Stretch"
+            Margin="16"
+            CornerRadius="16">
+
             <StackLayout Orientation="Vertical">
-                
-                <Label Text="Are you sure?"
-                           TextColor="#404144"
-                           Margin="24,16,24,14"
-                           HorizontalTextAlignment="Center"
-                       HorizontalOptions="Center"/>
-                
+
+                <Label 
+                    Text="Are you sure?"
+                    TextColor="#404144"
+                    Margin="24,16,24,14"
+                    HorizontalTextAlignment="Center"
+                    HorizontalOptions="Center"/>
+
                 <dxco:SimpleButton
                     Style="{StaticResource ButtonStyle}"
                     Text="Delete"
@@ -105,7 +107,7 @@
                     BackgroundColor="#EBEBEB"
                     HeightRequest="1"
                     Margin="24,0"/>
-                
+
                 <dxco:SimpleButton 
                     Text="Cancel"
                     TextColor="#2088ff"
@@ -113,9 +115,9 @@
                     BackgroundColor="Transparent"
                     Command="{Binding OpenActionSheetCmd}"
                     Margin="0,0,0,6"/>
+                
             </StackLayout>
         </dxco:DXPopup>
 
     </StackLayout>
-
 </ContentPage>

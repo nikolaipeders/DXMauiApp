@@ -8,50 +8,77 @@ namespace DXMauiApp.ViewModels
     public class RegisterViewModel : BaseViewModel
     {
         string userName;
-        string mail;
-        string password;
-        string confirmPassword;
-        bool isPopOpen = false;
-
-        public RegisterViewModel()
-        {
-            Title = "Register";
-
-            RegisterCommand = new Command(OnRegisterClicked, ValidateLogin);
-            PropertyChanged +=
-                (_, __) => RegisterCommand.ChangeCanExecute();
-        }
-
         public string UserName
         {
             get => this.userName;
             set => SetProperty(ref this.userName, value);
         }
 
+        string mail;
         public string Mail
         {
             get => this.mail;
             set => SetProperty(ref this.mail, value);
         }
 
+        string password;
         public string Password
         {
             get => this.password;
             set => SetProperty(ref this.password, value);
         }
 
+        string confirmPassword;
         public string ConfirmPassword
         {
             get => this.confirmPassword;
             set => SetProperty(ref this.confirmPassword, value);
         }
-        public bool IsPopOpen
+
+        bool buttonState;
+        public bool ButtonState
         {
-            get => this.isPopOpen;
-            set => SetProperty(ref this.isPopOpen, value);
+            get => this.buttonState;
+            set => SetProperty(ref this.buttonState, value);
+        }
+
+        string imageUrl;
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
         }
 
         public Command RegisterCommand { get; }
+
+        public RegisterViewModel()
+        {
+            RegisterCommand = new Command(OnRegisterClicked, ValidateLogin);
+            PropertyChanged +=
+                (_, __) => RegisterCommand.ChangeCanExecute();
+        }
+
+        public void OnAppearing()
+        {
+            ResetState();
+        }
 
         async void OnRegisterClicked()
         {
@@ -60,17 +87,37 @@ namespace DXMauiApp.ViewModels
             user.Email = Mail;
             user.Password = Password;
 
-            var result = await UserService.SaveUserAsync(user, true);
+            var response = await UserService.SaveUserAsync(user, true);
 
-            if (result.IsSuccessStatusCode)
+            if (response != null)
             {
-                IsPopOpen = true;
-                await Task.Delay(1500);
-                IsPopOpen = false;
-                await Task.Delay(500);
-
-                await Navigation.NavigateToAsync<LoginViewModel>(true);
+                if (response.IsSuccessStatusCode)
+                {
+                    ImageUrl = "checked.png";
+                    ImageDescription = "Succesfully registered account!";
+                }
             }
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Register failed!";
+            }
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(1500);
+
+            // Reset state
+            ResetState();
+        }
+
+        public void ResetState()
+        {
+            Title = "Register";
+            IsResultPopOpen = false;
+            ButtonState = true;
         }
 
         bool ValidateLogin()

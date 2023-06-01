@@ -184,8 +184,6 @@ namespace DXMauiApp.Services
 
                     user = JsonSerializer.Deserialize<User>(responseContent, serializerOptions);
 
-
-
                     Debug.WriteLine("RESULT IS: " + user.Email);
                     return user;
                 }
@@ -199,5 +197,38 @@ namespace DXMauiApp.Services
 
             return null;
         }
+
+        public async Task<HttpResponseMessage> VerifyUserByFaceAsync(User user)
+        {
+            Uri uri = new Uri(string.Format(baseUrl + "UserVerify"));
+
+            try
+            {
+                var jsonObject = new
+                {
+                    email = user.Email,
+                    image_data = user.Image
+                };
+
+                string json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _client.PostAsync(uri, content);
+
+                Debug.WriteLine("RESPONSE IS " + response);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("User successfully logged in.");
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ERROR: " + ex.Message);
+                return null;
+            }
+        }
+
     }
 }

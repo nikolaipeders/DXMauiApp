@@ -7,13 +7,54 @@ namespace DXMauiApp.ViewModels
     public class LoginViewModel : BaseViewModel
     {
         string userName;
-        string password;
-        bool isPopOpen = false;
+        public string UserName
+        {
+            get => this.userName;
+            set => SetProperty(ref this.userName, value);
+        }
 
+        string password;
+        public string Password
+        {
+            get => this.password;
+            set => SetProperty(ref this.password, value);
+        }
+
+        bool buttonState;
+        public bool ButtonState
+        {
+            get => this.buttonState;
+            set => SetProperty(ref this.buttonState, value);
+        }
+
+        string imageUrl;
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
+        }
+
+        public Command LoginCommand { get; }
+        public Command OpenRegisterPageCommand { get; }
         public LoginViewModel()
         {
-            Title = "Login";
-
             LoginCommand = new Command(OnLoginClicked, ValidateLogin);
 
             OpenRegisterPageCommand = new Command(async () => await Navigation.NavigateToAsync<RegisterViewModel>(false));
@@ -22,27 +63,10 @@ namespace DXMauiApp.ViewModels
                 (_, __) => LoginCommand.ChangeCanExecute();
         }
 
-
-        public string UserName
+        public void OnAppearing()
         {
-            get => this.userName;
-            set => SetProperty(ref this.userName, value);
+            ResetState();
         }
-
-        public string Password
-        {
-            get => this.password;
-            set => SetProperty(ref this.password, value);
-        }
-
-        public bool IsPopOpen
-        {
-            get => this.isPopOpen;
-            set => SetProperty(ref this.isPopOpen, value);
-        }
-
-        public Command LoginCommand { get; }
-        public Command OpenRegisterPageCommand { get; }
 
 
         async void OnLoginClicked()
@@ -58,13 +82,32 @@ namespace DXMauiApp.ViewModels
             {
                 await SecureStorage.Default.SetAsync("auth_token", result);
 
-                IsPopOpen = true;
-                await Task.Delay(1500);
-                IsPopOpen = false;
-                await Task.Delay(500);
+                ImageUrl = "checked.png";
+                ImageDescription = "Succesfully logged in!";
 
+                IsResultPopOpen = true;
+                await Task.Delay(1500);
+                IsResultPopOpen = false;
+                
+                await Task.Delay(500);
                 await Navigation.NavigateToAsync<ItemsViewModel>(true);
             }
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Login failed!";
+
+                IsResultPopOpen = true;
+                await Task.Delay(1500);
+                IsResultPopOpen = false;
+            }
+        }
+
+        public void ResetState()
+        {
+            Title = "Login";
+            IsResultPopOpen = false;
+            ButtonState = true;
         }
 
         bool ValidateLogin()

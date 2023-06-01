@@ -47,20 +47,6 @@ namespace DXMauiApp.ViewModels
             get => this.imageBase64;
             set => SetProperty(ref this.imageBase64, value);
         }
-
-        string imageUrl;
-        public string ImageUrl
-        {
-            get => this.imageUrl;
-            set => SetProperty(ref this.imageUrl, value);
-        }
-        
-        string imageDescription;
-        public string ImageDescription
-        {
-            get => this.imageDescription;
-            set => SetProperty(ref this.imageDescription, value);
-        }
         
         string instructions;
         public string Instructions
@@ -85,27 +71,20 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this.snapShot, value);
             }
         }
-        
-        bool isError = false;
-        public bool IsError
+        string imageUrl;
+        public string ImageUrl
         {
-            get => this.isError;
-            set
-            {
-                SetProperty(ref this.isError, value);
-            }
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
         }
-        
-        bool isSuccess = false;
-        public bool IsSuccess
+
+        string imageDescription;
+        public string ImageDescription
         {
-            get => this.isSuccess;
-            set
-            {
-                SetProperty(ref this.isSuccess, value);
-            }
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
         }
-        
+
         bool isResultPopOpen = false;
         public bool IsResultPopOpen
         {
@@ -169,9 +148,6 @@ namespace DXMauiApp.ViewModels
 
                     // Encode the byte array as base64
                     ImageBase64 = Convert.ToBase64String(photoBytes);
-
-                    Debug.WriteLine("BASE64: " + ImageBase64);
-
                 }
             }
         }
@@ -196,7 +172,6 @@ namespace DXMauiApp.ViewModels
 
             var result = await UserService.SaveUserAsync(user, false);
 
-            // IF SUCCESS
             if (result.IsSuccessStatusCode)
             {
                 ImageUrl = "checked.png";
@@ -205,7 +180,6 @@ namespace DXMauiApp.ViewModels
                 audioSuccess.Play();
             }
 
-            // IF FAIL
             else
             {
                 ImageUrl = "error.png";

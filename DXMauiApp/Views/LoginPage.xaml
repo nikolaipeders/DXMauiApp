@@ -10,7 +10,7 @@
             
             <dxe:TextEdit Text="{Binding UserName}" LabelText="Login" Margin="0" />
             <dxe:PasswordEdit Text="{Binding Password}" LabelText="Password"  LabelFontSize="Small" Margin="0" Grid.Row="1" />
-            <Button Text="Log In" Command="{Binding LoginCommand}" Margin="0,10,0,0" Grid.Row="2" Style="{StaticResource PrimaryButton}"/>
+            <Button Text="Log In" Command="{Binding LoginCommand}" Margin="0,10,0,0" Grid.Row="2" Style="{StaticResource PrimaryButton}" IsEnabled="{Binding ButtonState}"/>
 
             <HorizontalStackLayout HorizontalOptions="Center" Margin="0,10,0,0">
                 <Label
@@ -28,20 +28,32 @@
                 </Label>
             </HorizontalStackLayout>
 
+            <!-- result popup -->
             <dxco:DXPopup 
-                x:Name="popup"
+                x:Name="resultPopup"
+                AllowScrim="True"
                 VerticalAlignment="Center"
-                IsOpen="{Binding IsPopOpen}"
+                IsOpen="{Binding IsResultPopOpen}"
                 AnimationDuration="00:00:00.500">
                 <VerticalStackLayout 
                     WidthRequest="300"
-                    VerticalOptions="Center">
+                    VerticalOptions="Center"
+                    BackgroundColor="AliceBlue">
+
+                    <Image 
+                        Source="{Binding ImageUrl}" 
+                        Aspect="AspectFit" 
+                        WidthRequest="250" 
+                        HeightRequest="200" 
+                        HorizontalOptions="Center"
+                        Margin="20, 20, 20, 10"/>
+
                     <Label
                         VerticalTextAlignment="Center"
                         HorizontalOptions="Center"
-                        Text="Succesfully logged in!"
-                        FontSize="18"
-                        Margin="10, 10"/>
+                        Text="{Binding ImageDescription}"
+                        FontSize="14"
+                        Margin="10, 10, 20, 20"/>
                 </VerticalStackLayout>
             </dxco:DXPopup>
 

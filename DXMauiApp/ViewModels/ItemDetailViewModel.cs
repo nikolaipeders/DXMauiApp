@@ -1,4 +1,6 @@
-﻿using Plugin.Maui.Audio;
+﻿using DXMauiApp.Models;
+using DXMauiApp.Services;
+using Plugin.Maui.Audio;
 using System.Diagnostics;
 using System.Web;
 
@@ -24,26 +26,11 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.description, value);
         }
 
-        string imageUrl;
-
-        public string ImageUrl
+        string mail;
+        public string Mail
         {
-            get => this.imageUrl;
-            set => SetProperty(ref this.imageUrl, value);
-        }
-
-        string imageDescription;
-        public string ImageDescription
-        {
-            get => this.imageDescription;
-            set => SetProperty(ref this.imageDescription, value);
-        }
-
-        string instructions;
-        public string Instructions
-        {
-            get => this.instructions;
-            set => SetProperty(ref this.instructions, value);
+            get => this.mail;
+            set => SetProperty(ref this.mail, value);
         }
 
         bool buttonState;
@@ -63,24 +50,18 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-        bool isError = false;
-        public bool IsError
+        string imageUrl;
+        public string ImageUrl
         {
-            get => this.isError;
-            set
-            {
-                SetProperty(ref this.isError, value);
-            }
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
         }
 
-        bool isSuccess = false;
-        public bool IsSuccess
+        string imageDescription;
+        public string ImageDescription
         {
-            get => this.isSuccess;
-            set
-            {
-                SetProperty(ref this.isSuccess, value);
-            }
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
         }
 
         bool isResultPopOpen = false;
@@ -103,23 +84,11 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-        string redButtonText;
-        public string RedButtonText
-        {
-            get => this.redButtonText;
-            set
-            {
-                SetProperty(ref this.redButtonText, value);
-            }
-        }
-
         public Command TakeSnapshotCmd { get; set; }
         public Command OpenActionSheetCmd { get; set; }
 
         public ItemDetailViewModel()
         {
-            RedButtonText = "Leave lock";
-            ButtonState = true;
 
             TakeSnapshotCmd = new Command(TakePhoto);
 
@@ -151,8 +120,6 @@ namespace DXMauiApp.ViewModels
 
         public void OnAppearing()
         {
-            RedirectToLogin();
-
             ResetState();
         }
 
@@ -196,35 +163,53 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-        public async void UnlockDoor(string base64)
+        public async void UnlockDoor(string base64String)
         {
             // Prepare sound effects
             AudioManager am = new AudioManager();
 
             // State handling
             ButtonState = false;
-            Instructions = "Verifying face ...";
 
             // Do REST magic
-            await Task.Delay(3000);
+            User user = new User()
+            {
+                Email = Mail,
+                Image = "data:image/jpeg;base64," + base64String
+            };
 
-            // IF SUCCESS
-            ImageUrl = "door.png";
-            ImageDescription = "Door unlocked!";
-            var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
-            audioSuccess.Play();
+            var response = await UserService.VerifyUserByFaceAsync(user);
 
-            // IF FAIL
-            //ImageUrl = "error.png";
-            //ImageDescription = "Access denied";
-            //var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
-            //audioError.Play();
+            if (response != null)
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    ImageUrl = "door.png";
+                    ImageDescription = "Door unlocked!";
+                    var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                    audioSuccess.Play();
+                }
+                else
+                {
+                    ImageUrl = "error.png";
+                    ImageDescription = "Access denied!";
+                    var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                    audioError.Play();
+                }
+            }
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error!";
+                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                audioError.Play();
+            }
 
             // Show status of call
             IsResultPopOpen = true;
 
             // Return
-            await Task.Delay(3000);
+            await Task.Delay(1500);
 
             // Reset state
             ResetState();
@@ -233,10 +218,26 @@ namespace DXMauiApp.ViewModels
         public void ResetState()
         {
             IsResultPopOpen = false;
+            IsActionSheetOpen = false;
             ButtonState = true;
             Title = LockTitle;
-            Instructions = "Point phone towards your face and press button to unlock";
             SnapShot = "smartdoor.png";
+        }
+
+        public async void GetDetails()
+        {
+            TokenRequest request = new TokenRequest();
+
+            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+
+            request.Token = authToken.Replace("\"", "");
+
+            User user = await UserService.GetUserByTokenAsync(request);
+
+            if (user != null)
+            {
+                Mail = user.Email;
+            }
         }
     }
 }

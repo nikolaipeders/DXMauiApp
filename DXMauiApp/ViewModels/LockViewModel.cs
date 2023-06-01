@@ -6,26 +6,6 @@ namespace DXMauiApp.ViewModels
     public class LockViewModel : BaseViewModel
     {
         Item _selectedItem;
-
-
-        public LockViewModel()
-        {
-            Title = "My lock";
-            Items = new ObservableCollection<Item>();
-            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-            ItemTapped = new Command<Item>(OnItemSelected);
-            AddItemCommand = new Command(OnAddItem);
-        }
-
-
-        public ObservableCollection<Item> Items { get; }
-
-        public Command LoadItemsCommand { get; }
-
-        public Command AddItemCommand { get; }
-
-        public Command<Item> ItemTapped { get; }
-
         public Item SelectedItem
         {
             get => this._selectedItem;
@@ -34,6 +14,19 @@ namespace DXMauiApp.ViewModels
                 SetProperty(ref this._selectedItem, value);
                 OnItemSelected(value);
             }
+        }
+        public ObservableCollection<Item> Items { get; }
+        public Command LoadItemsCommand { get; }
+        public Command AddItemCommand { get; }
+        public Command<Item> ItemTapped { get; }
+
+        public LockViewModel()
+        {
+            Title = "My lock";
+            Items = new ObservableCollection<Item>();
+            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
+            ItemTapped = new Command<Item>(OnItemSelected);
+            AddItemCommand = new Command(OnAddItem);
         }
 
         public void OnAppearing()
