@@ -64,6 +64,16 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.imageDescription, value);
         }
 
+        bool isLoading = false;
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                SetProperty(ref this.isLoading, value);
+            }
+        }
+
         bool isResultPopOpen = false;
         public bool IsResultPopOpen
         {
@@ -121,6 +131,8 @@ namespace DXMauiApp.ViewModels
         public void OnAppearing()
         {
             ResetState();
+
+            GetDetails();
         }
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -133,7 +145,6 @@ namespace DXMauiApp.ViewModels
         {
             if (MediaPicker.IsCaptureSupported)
             {
-
                 FileResult photo = await MediaPicker.CapturePhotoAsync();
 
                 if (photo != null)
@@ -148,7 +159,7 @@ namespace DXMauiApp.ViewModels
 
                     localFileStream.Close();
 
-                    SnapShot = ImageSource.FromFile(localFilePath);
+                    //SnapShot = ImageSource.FromFile(localFilePath);
 
                     // Convert photo file to byte array
                     byte[] photoBytes = File.ReadAllBytes(localFilePath);
@@ -156,8 +167,7 @@ namespace DXMauiApp.ViewModels
                     // Encode the byte array as base64
                     string base64Photo = Convert.ToBase64String(photoBytes);
 
-                    Debug.WriteLine("BASE64: " + base64Photo);
-
+                    await Task.Delay(250);
                     UnlockDoor(base64Photo);
                 }
             }
@@ -171,6 +181,12 @@ namespace DXMauiApp.ViewModels
             // State handling
             ButtonState = false;
 
+            // Show loading screen
+            IsLoading = true;
+            ImageUrl = "";
+            ImageDescription = "Verifying...";
+            IsResultPopOpen = true;
+
             // Do REST magic
             User user = new User()
             {
@@ -178,7 +194,11 @@ namespace DXMauiApp.ViewModels
                 Image = "data:image/jpeg;base64," + base64String
             };
 
+            Debug.WriteLine("LOOK AT MAIL:" + user.Email);
+
             var response = await UserService.VerifyUserByFaceAsync(user);
+
+            IsLoading = false;
 
             if (response != null)
             {
@@ -219,6 +239,7 @@ namespace DXMauiApp.ViewModels
         {
             IsResultPopOpen = false;
             IsActionSheetOpen = false;
+            IsLoading = false;
             ButtonState = true;
             Title = LockTitle;
             SnapShot = "smartdoor.png";

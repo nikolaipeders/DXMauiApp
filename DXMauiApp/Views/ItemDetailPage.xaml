@@ -54,12 +54,19 @@
                 VerticalAlignment="Center"
                 IsOpen="{Binding IsResultPopOpen}"
                 AnimationDuration="00:00:00.500">
-            <VerticalStackLayout 
-                    WidthRequest="300"
-                    VerticalOptions="Center"
-                    BackgroundColor="AliceBlue">
+            
+            <Grid 
+                WidthRequest="300"
+                VerticalOptions="Center"
+                BackgroundColor="AliceBlue">
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
                 <Image 
+                    Grid.Row="0"
                         Source="{Binding ImageUrl}" 
                         Aspect="AspectFit" 
                         WidthRequest="250" 
@@ -67,13 +74,20 @@
                         HorizontalOptions="Center"
                         Margin="20, 20, 20, 10"/>
 
+                <ActivityIndicator
+                    Grid.Row="0"
+                    IsRunning="{Binding IsLoading}"
+                    Color="Orange" />
+                
+
                 <Label
-                        VerticalTextAlignment="Center"
-                        HorizontalOptions="Center"
-                        Text="{Binding ImageDescription}"
-                        FontSize="14"
-                        Margin="10, 10, 20, 20"/>
-            </VerticalStackLayout>
+                    Grid.Row="1"
+                    VerticalTextAlignment="Center"
+                    HorizontalOptions="Center"
+                    Text="{Binding ImageDescription}"
+                    FontSize="14"
+                    Margin="10, 10, 20, 20"/>
+            </Grid>
         </dxco:DXPopup>
 
         <!-- action sheet -->

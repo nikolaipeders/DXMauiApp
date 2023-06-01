@@ -111,6 +111,8 @@ namespace DXMauiApp.ViewModels
 
             // Reset state
             ResetState();
+
+            await Navigation.GoBackAsync();
         }
 
         public void ResetState()
