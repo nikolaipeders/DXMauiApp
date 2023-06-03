@@ -108,11 +108,16 @@ namespace DXMauiApp.ViewModels
 
             // Return
             await Task.Delay(1500);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                // Publish message with email and password
+                MessagingCenter.Send(this, "AccountRegistered", (Mail, Password));
 
-            // Reset state
-            ResetState();
+                ResetState();
 
-            await Navigation.GoBackAsync();
+                await Navigation.GoBackAsync();
+            }
         }
 
         public void ResetState()

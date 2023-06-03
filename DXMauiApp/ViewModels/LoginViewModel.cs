@@ -6,11 +6,11 @@ namespace DXMauiApp.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        string userName;
-        public string UserName
+        string mail;
+        public string Mail
         {
-            get => this.userName;
-            set => SetProperty(ref this.userName, value);
+            get => this.mail;
+            set => SetProperty(ref this.mail, value);
         }
 
         string password;
@@ -55,6 +55,9 @@ namespace DXMauiApp.ViewModels
         public Command OpenRegisterPageCommand { get; }
         public LoginViewModel()
         {
+            // Subscribe to the "AccountRegistered" message
+            MessagingCenter.Subscribe<RegisterViewModel, (string, string)>(this, "AccountRegistered", OnAccountRegistered);
+
             LoginCommand = new Command(OnLoginClicked, ValidateLogin);
 
             OpenRegisterPageCommand = new Command(async () => await Navigation.NavigateToAsync<RegisterViewModel>(false));
@@ -68,12 +71,19 @@ namespace DXMauiApp.ViewModels
             ResetState();
         }
 
+        private void OnAccountRegistered(RegisterViewModel sender, (string, string) accountInfo)
+        {
+            // Update email and password fields
+            Mail = accountInfo.Item1;
+            Password = accountInfo.Item2;
+        }
+
 
         async void OnLoginClicked()
         {
             User user = new User();
 
-            user.Email = UserName;
+            user.Email = Mail;
             user.Password = Password;
 
             var result = await UserService.UserLoginAsync(user);
@@ -90,6 +100,7 @@ namespace DXMauiApp.ViewModels
                 IsResultPopOpen = false;
                 
                 await Task.Delay(500);
+                await Navigation.GoBackAsync();
                 await Navigation.NavigateToAsync<ItemsViewModel>(true);
             }
             else
@@ -112,7 +123,7 @@ namespace DXMauiApp.ViewModels
 
         bool ValidateLogin()
         {
-            return !String.IsNullOrWhiteSpace(UserName)
+            return !String.IsNullOrWhiteSpace(Mail)
                 && !String.IsNullOrWhiteSpace(Password);
         }
     }
