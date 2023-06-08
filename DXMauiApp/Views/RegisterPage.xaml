@@ -18,7 +18,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <dxe:TextEdit Text="{Binding UserName}" LabelText="Username" Margin="0" Grid.Row="0" />
+            <dxe:TextEdit Text="{Binding Name}" LabelText="Name" Margin="0" Grid.Row="0" />
             <dxe:TextEdit Text="{Binding Mail}" LabelText="Email" Margin="0" Grid.Row="1" />
             <dxe:PasswordEdit Text="{Binding Password}" LabelText="Password"  LabelFontSize="Small" Margin="0" Grid.Row="2" />
             <dxe:PasswordEdit Text="{Binding ConfirmPassword}" LabelText="Confirm passpord"  LabelFontSize="Small" Margin="0" Grid.Row="3" />

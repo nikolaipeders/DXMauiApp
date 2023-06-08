@@ -58,12 +58,9 @@ namespace DXMauiApp.ViewModels
             // Subscribe to the "AccountRegistered" message
             MessagingCenter.Subscribe<RegisterViewModel, (string, string)>(this, "AccountRegistered", OnAccountRegistered);
 
-            LoginCommand = new Command(OnLoginClicked, ValidateLogin);
+            LoginCommand = new Command(OnLoginClicked);
 
             OpenRegisterPageCommand = new Command(async () => await Navigation.NavigateToAsync<RegisterViewModel>(false));
-
-            PropertyChanged +=
-                (_, __) => LoginCommand.ChangeCanExecute();
         }
 
         public void OnAppearing()
@@ -82,15 +79,15 @@ namespace DXMauiApp.ViewModels
         async void OnLoginClicked()
         {
             User user = new User();
-
-            user.Email = Mail;
-            user.Password = Password;
+            user.email = Mail;
+            user.password = Password;
 
             var result = await UserService.UserLoginAsync(user);
 
             if (result != null)
             {
-                await SecureStorage.Default.SetAsync("auth_token", result);
+                await SecureStorage.Default.SetAsync("auth_token", result.token);
+                await SecureStorage.Default.SetAsync("user_id", result._id);
 
                 ImageUrl = "checked.png";
                 ImageDescription = "Succesfully logged in!";
@@ -101,7 +98,7 @@ namespace DXMauiApp.ViewModels
                 
                 await Task.Delay(500);
                 await Navigation.GoBackAsync();
-                await Navigation.NavigateToAsync<ItemsViewModel>(true);
+                await Navigation.NavigateToAsync<LocksViewModel>(true);
             }
             else
             {
@@ -119,12 +116,6 @@ namespace DXMauiApp.ViewModels
             Title = "Login";
             IsResultPopOpen = false;
             ButtonState = true;
-        }
-
-        bool ValidateLogin()
-        {
-            return !String.IsNullOrWhiteSpace(Mail)
-                && !String.IsNullOrWhiteSpace(Password);
         }
     }
 }

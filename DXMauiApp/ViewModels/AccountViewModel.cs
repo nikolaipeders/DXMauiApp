@@ -13,11 +13,11 @@ namespace DXMauiApp.ViewModels
 {
     public class AccountViewModel : BaseViewModel
     {
-        string userName;
-        public string UserName
+        string name;
+        public string Name
         {
-            get => this.userName;
-            set => SetProperty(ref this.userName, value);
+            get => this.name;
+            set => SetProperty(ref this.name, value);
         }
 
         string mail;
@@ -97,8 +97,6 @@ namespace DXMauiApp.ViewModels
 
         public Command TakePictureCommand { get; }
         public Command UpdateCommand { get; }
-        public Command SignOutCommand { get; }
-
         public AccountViewModel()
         {
             Title = "My account";
@@ -109,10 +107,7 @@ namespace DXMauiApp.ViewModels
 
             UpdateCommand = new Command(OnUpdateClicked);
 
-            TakePictureCommand = new Command(TakePhoto);
-            
-            SignOutCommand = new Command(OnSignOutClicked);
-
+            TakePictureCommand = new Command(TakePhoto); 
         }
 
         public void OnAppearing()
@@ -163,11 +158,12 @@ namespace DXMauiApp.ViewModels
             // Do REST magic
             User user = new User();
 
-            user.Email = Mail;
-            user.Password = Password;
+            user.name = Name;
+            user.email = Mail;
+            user.password = Password;
             if (ImageBase64 != null && ImageBase64.Length > 5)
-            {
-                user.Image = "data:image/jpeg;base64," + ImageBase64;
+            {   
+                user.image = "data:image/jpeg;base64," + ImageBase64;
             }
 
             var result = await UserService.SaveUserAsync(user, false);
@@ -209,18 +205,20 @@ namespace DXMauiApp.ViewModels
             TokenRequest request = new TokenRequest();
 
             var authToken = await SecureStorage.Default.GetAsync("auth_token");
+            var id = await SecureStorage.Default.GetAsync("user_id");
 
             request.Token = authToken.Replace("\"", "");
 
-            User user = await UserService.GetUserByTokenAsync(request);
+            User user = await UserService.GetUserByIdAsync(request, id);
 
             if (user != null)
             {
-                Mail = user.Email;
+                Name = user.name;
+                Mail = user.email;
 
-                if (user.Image != null)
+                if (user.image != null)
                 {
-                    SnapShot = user.Image;
+                    SnapShot = user.image;
                 }
                 else
                 {
@@ -229,22 +227,5 @@ namespace DXMauiApp.ViewModels
             }
         }
 
-        async void OnSignOutClicked()
-        {
-            TokenRequest request = new TokenRequest();
-
-            var authToken = await SecureStorage.Default.GetAsync("auth_token");
-
-            request.Token = authToken.Replace("\"", "");
-
-            var result = await UserService.UserSignOutAsync(request);
-
-            if (result.IsSuccessStatusCode)
-            {
-                await SecureStorage.Default.SetAsync("auth_token", "");
-
-                RedirectToLogin();
-            }
-        }
     }
 }

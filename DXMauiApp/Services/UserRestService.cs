@@ -15,7 +15,7 @@ namespace DXMauiApp.Services
         HttpClient _client;
         JsonSerializerOptions _serializerOptions;
 
-        string baseUrl = "http://51.75.69.121:3000/api/";
+        string baseUrl = "http://51.75.69.121:3000/api/v1/";
 
         public UserRestService()
         {
@@ -29,8 +29,7 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> SaveUserAsync(User user, bool isNewItem = false)
         {
-            Uri postUri = new Uri(string.Format(baseUrl + "UserCreate"));
-            Uri putUri = new Uri(string.Format(baseUrl + "UserUpdate"));
+            Uri uri = new Uri(string.Format(baseUrl + "user"));
 
             try
             {
@@ -43,10 +42,11 @@ namespace DXMauiApp.Services
                 {
                     var jsonObject = new
                     {
-                        email = user.Email,
-                        new_email = user.Email,
-                        new_password = user.Password,
-                        new_image_data = user.Image
+                        name = user.name,
+                        email = user.email,
+                        new_email = user.email,
+                        new_password = user.password,
+                        new_image_data = user.image
                     };
                     json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
                 }
@@ -56,9 +56,9 @@ namespace DXMauiApp.Services
                 HttpResponseMessage response = null;
 
                 if (isNewItem)
-                    response = await _client.PostAsync(postUri, content);
+                    response = await _client.PostAsync(uri, content);
                 else
-                    response = await _client.PostAsync(putUri, content);
+                    response = await _client.PutAsync(uri, content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -77,9 +77,9 @@ namespace DXMauiApp.Services
         }
 
 
-        public async Task<string> UserLoginAsync(User user)
+        public async Task<LoginResponse> UserLoginAsync(User user)
         {
-            Uri uri = new Uri(string.Format(baseUrl + "UserLogin"));
+            Uri uri = new Uri(string.Format(baseUrl + "login"));
 
             try
             {
@@ -90,9 +90,11 @@ namespace DXMauiApp.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("User successfully logged in.");
-                    string token = await response.Content.ReadAsStringAsync();
-                    return token;
+                    string responseJson = await response.Content.ReadAsStringAsync();
+                    LoginResponse loginResponse = JsonSerializer.Deserialize<LoginResponse>(responseJson);
+                    Debug.WriteLine("User successfully logged in. Token: " + loginResponse.token);
+                    Debug.WriteLine("User ID: " + loginResponse._id);
+                    return loginResponse;
                 }
                 return null;
             }
@@ -103,52 +105,29 @@ namespace DXMauiApp.Services
             }
         }
 
-        public async Task<HttpResponseMessage> UserSignOutAsync(TokenRequest request)
-        {
-            Uri uri = new Uri(string.Format(baseUrl + "UserLogout"));
-
-            try
-            {
-                Debug.WriteLine("MODEL IS " + request.Token);
-
-                string json = JsonSerializer.Serialize<TokenRequest>(request, _serializerOptions);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = await _client.PostAsync(uri, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine("User successfully signed out.");
-                    return response;
-                }
-                Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("ERROR: " + ex.Message);
-                return null;
-            }
-        }
 
         public async Task<HttpResponseMessage> UserConfirmAccessAsync(TokenRequest request)
         {
-            Uri uri = new Uri(string.Format(baseUrl + "UserAccessTest"));
+            Uri uri = new Uri(string.Format(baseUrl + "debug/userAccess"));
 
             try
             {
                 Debug.WriteLine("MODEL IS " + request.Token);
 
-                string json = JsonSerializer.Serialize<TokenRequest>(request, _serializerOptions);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                // Create a GET request
+                HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
-                HttpResponseMessage response = await _client.PostAsync(uri, content);
+                // Add a header to the request
+                httpRequest.Headers.Add("token", request.Token);
+
+                HttpResponseMessage response = await _client.SendAsync(httpRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("User has access.");
                     return response;
                 }
+
                 Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
                 return response;
             }
@@ -159,19 +138,19 @@ namespace DXMauiApp.Services
             }
         }
 
-        public async Task<User> GetUserByTokenAsync(TokenRequest request)
+        public async Task<User> GetUserByIdAsync(TokenRequest tokenObj, string id)
         {
-            Uri uri = new Uri(string.Format(baseUrl + "UserGetInfo"));
-            User user = new User();
-
+            var token = tokenObj.Token;
             try
             {
-                Debug.WriteLine("MODEL IS " + request.Token);
+                string apiUrl = $"{baseUrl}user/{id}";
 
-                string json = JsonSerializer.Serialize<TokenRequest>(request, _serializerOptions);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+                Debug.WriteLine($" API URL IS {apiUrl}");
 
-                HttpResponseMessage response = await _client.PostAsync(uri, content);
+                _client.DefaultRequestHeaders.Clear();
+                _client.DefaultRequestHeaders.Add("token", token);
+
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -182,20 +161,20 @@ namespace DXMauiApp.Services
                         PropertyNameCaseInsensitive = true,
                     };
 
-                    user = JsonSerializer.Deserialize<User>(responseContent, serializerOptions);
+                    User user = JsonSerializer.Deserialize<User>(responseContent, serializerOptions);
 
-                    Debug.WriteLine("RESULT IS: " + user.Email);
+                    Debug.WriteLine("RESULT IS: " + user.email);
                     return user;
                 }
 
-                Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
+                // Throw an exception instead of returning null
+                throw new Exception("Failed to retrieve user information. Status code: " + response.StatusCode);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("ERROR: " + ex.Message);
+                throw;
             }
-
-            return null;
         }
 
         public async Task<HttpResponseMessage> VerifyUserByFaceAsync(User user)
@@ -206,8 +185,8 @@ namespace DXMauiApp.Services
             {
                 var jsonObject = new
                 {
-                    email = user.Email,
-                    image_data = user.Image
+                    email = user.email,
+                    image_data = user.image
                 };
 
                 string json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
@@ -229,6 +208,5 @@ namespace DXMauiApp.Services
                 return null;
             }
         }
-
     }
 }

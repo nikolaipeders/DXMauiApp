@@ -14,8 +14,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -41,7 +39,6 @@
                         Command="{Binding TakePictureCommand}"/>
                     
                     <!-- Overlay Layer -->
-
                         <Image
                             Opacity="1"
                             Source="camicon.png"
@@ -53,13 +50,11 @@
                 </Grid>
             </Frame>
             
-            <dxe:TextEdit Text="{Binding Mail}" LabelText="Current Email" Margin="0" Grid.Row="1" />
-            <dxe:TextEdit Text="{Binding NewMail}" LabelText="New Email" Margin="0" Grid.Row="2" />
-            <dxe:PasswordEdit Text="{Binding Password}" LabelText="Current password"  Margin="0" Grid.Row="3" />
-            <dxe:PasswordEdit Text="{Binding ConfirmPassword}" LabelText="New password" Margin="0" Grid.Row="4" />
-            <dxe:PasswordEdit Text="{Binding ConfirmPassword}" LabelText="Confirm password" Margin="0" Grid.Row="5" />
-            <Button Text="Update account" Command="{Binding UpdateCommand}" Margin="0,10,0,0" Grid.Row="6" Style="{StaticResource PrimaryButton}" IsEnabled="{Binding ButtonState}"/>
-            <Button Text="Sign out" Command="{Binding SignOutCommand}" Margin="0,10,0,0" Grid.Row="7" Style="{StaticResource AlertButton}"/>
+            <dxe:TextEdit Text="{Binding Name}" LabelText="Name" Margin="0" Grid.Row="1" />
+            <dxe:TextEdit Text="{Binding Mail}" LabelText="Email" Margin="0" Grid.Row="2" />
+            <dxe:PasswordEdit Text="{Binding Password}" LabelText="Password"  Margin="0" Grid.Row="3" />
+            <dxe:PasswordEdit Text="{Binding ConfirmPassword}" LabelText="Confirm password" Margin="0" Grid.Row="4" />
+            <Button Text="Update account" Command="{Binding UpdateCommand}" Margin="0,10,0,0" Grid.Row="5" Style="{StaticResource PrimaryButton}" IsEnabled="{Binding ButtonState}"/>
 
             <!-- result popup -->
             <dxco:DXPopup 

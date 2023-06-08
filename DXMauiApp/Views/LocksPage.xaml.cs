@@ -3,17 +3,16 @@
 namespace DXMauiApp.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ItemDetailPage : ContentPage
+    public partial class LocksPage : ContentPage
     {
-
-        public ItemDetailPage()
+        public LocksPage()
         {
             InitializeComponent();
-            BindingContext = ViewModel = new ItemDetailViewModel();
+            BindingContext = ViewModel = new LocksViewModel();
             ViewModel.OnAppearing();
         }
 
-        ItemDetailViewModel ViewModel { get; }
+        LocksViewModel ViewModel { get; }
 
         protected override void OnAppearing()
         {

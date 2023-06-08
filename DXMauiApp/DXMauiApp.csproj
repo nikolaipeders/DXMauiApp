@@ -84,8 +84,11 @@
 	  <Compile Update="Views\AccountPage.xaml.cs">
 	    <DependentUpon>AccountPage.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\LockPage.xaml.cs">
-	    <DependentUpon>LockPage.xaml</DependentUpon>
+	  <Compile Update="Views\LockDetailPage.xaml.cs">
+	    <DependentUpon>LockDetailPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\LocksPage.xaml.cs">
+	    <DependentUpon>LocksPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\RegisterPage.xaml.cs">
 	    <DependentUpon>RegisterPage.xaml</DependentUpon>

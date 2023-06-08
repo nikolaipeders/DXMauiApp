@@ -8,42 +8,86 @@ namespace DXMauiApp.ViewModels
         public const string ViewName = "NewItemPage";
 
 
-        string text;
-        string description;
+        string name;
+        public string Name
+        {
+            get => this.name;
+            set => SetProperty(ref this.name, value);
+        }
+
+        string location;
+        public string Location
+        {
+            get => this.location;
+            set => SetProperty(ref this.location, value);
+        }
+
+        string serial;
+        public string Serial
+        {
+            get => this.serial;
+            set => SetProperty(ref this.serial, value);
+        }
+
+        bool buttonState;
+        public bool ButtonState
+        {
+            get => this.buttonState;
+            set => SetProperty(ref this.buttonState, value);
+        }
+
+        string imageUrl;
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
+        }
+
+        TokenRequest token;
+        public TokenRequest Token
+        {
+            get => this.token;
+            set => SetProperty(ref this.token, value);
+        }
+        string id = string.Empty;
+        public string Id
+        {
+            get => this.id;
+            set => SetProperty(ref this.id, value);
+        }
 
         public NewItemViewModel()
         {
-            SaveCommand = new Command(OnSave, ValidateSave);
+            Token = new TokenRequest();
+            SaveCommand = new Command(OnSave);
             CancelCommand = new Command(OnCancel);
-            PropertyChanged +=
-                (_, __) => SaveCommand.ChangeCanExecute();
         }
 
-        public string Text
+        public async void OnAppearing()
         {
-            get => this.text;
-            set => SetProperty(ref this.text, value);
+            await GetDetails();
         }
 
-        public string Description
-        {
-            get => this.description;
-            set => SetProperty(ref this.description, value);
-        }
-
-
-        [DataFormDisplayOptions(IsVisible = false)]
         public Command SaveCommand { get; }
-
-        [DataFormDisplayOptions(IsVisible = false)]
         public Command CancelCommand { get; }
 
-
-        bool ValidateSave()
-        {
-            return !String.IsNullOrWhiteSpace(this.text)
-                && !String.IsNullOrWhiteSpace(this.description);
-        }
 
         async void OnCancel()
         {
@@ -53,17 +97,54 @@ namespace DXMauiApp.ViewModels
 
         async void OnSave()
         {
-            Item newItem = new Item()
+            Lock newLock = new Lock();
+
+            newLock.name = Name;
+            newLock.location = Location;
+            newLock.serial = Serial;
+            
+
+            var response = await LockService.SaveLockAsync(Token, newLock, true);
+
+            if (response != null)
             {
-                Id = Guid.NewGuid().ToString(),
-                Text = Text,
-                Description = Description
-            };
+                if (response.IsSuccessStatusCode)
+                {
+                    ImageUrl = "checked.png";
+                    ImageDescription = "Succesfully added lock!";
+                }
+            }
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error!";
+            }
 
-            await DataStore.AddItemAsync(newItem);
+            // Show status of call
+            IsResultPopOpen = true;
 
-            // This will pop the current page off the navigation stack
-            await Navigation.GoBackAsync();
+            // Return
+            await Task.Delay(1500);
+
+            if (response.IsSuccessStatusCode)
+            {
+                ResetState();
+
+                await Navigation.GoBackAsync();
+            }
+        }
+        public void ResetState()
+        {
+            IsResultPopOpen = false;
+            ButtonState = true;
+        }
+
+        public async Task GetDetails()
+        {
+            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+            Token.Token = authToken.Replace("\"", "");
+
+            Id = await SecureStorage.Default.GetAsync("user_id");
         }
     }
 }

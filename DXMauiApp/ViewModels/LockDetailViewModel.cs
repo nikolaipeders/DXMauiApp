@@ -6,9 +6,9 @@ using System.Web;
 
 namespace DXMauiApp.ViewModels
 {
-    public class ItemDetailViewModel : BaseViewModel, IQueryAttributable
+    public class LockDetailViewModel : BaseViewModel, IQueryAttributable
     {
-        public const string ViewName = "ItemDetailPage";
+        public const string ViewName = "LockDetailPage";
 
         public string Id { get; set; }
 
@@ -97,7 +97,7 @@ namespace DXMauiApp.ViewModels
         public Command TakeSnapshotCmd { get; set; }
         public Command OpenActionSheetCmd { get; set; }
 
-        public ItemDetailViewModel()
+        public LockDetailViewModel()
         {
 
             TakeSnapshotCmd = new Command(TakePhoto);
@@ -190,11 +190,11 @@ namespace DXMauiApp.ViewModels
             // Do REST magic
             User user = new User()
             {
-                Email = Mail,
-                Image = "data:image/jpeg;base64," + base64String
+                email = Mail,
+                image = "data:image/jpeg;base64," + base64String
             };
 
-            Debug.WriteLine("LOOK AT MAIL:" + user.Email);
+            Debug.WriteLine("LOOK AT MAIL:" + user.email);
 
             var response = await UserService.VerifyUserByFaceAsync(user);
 
@@ -250,14 +250,15 @@ namespace DXMauiApp.ViewModels
             TokenRequest request = new TokenRequest();
 
             var authToken = await SecureStorage.Default.GetAsync("auth_token");
+            var id = await SecureStorage.Default.GetAsync("user_id");
 
             request.Token = authToken.Replace("\"", "");
 
-            User user = await UserService.GetUserByTokenAsync(request);
+            User user = await UserService.GetUserByIdAsync(request, id);
 
             if (user != null)
             {
-                Mail = user.Email;
+                Mail = user.email;
             }
         }
     }

@@ -12,7 +12,16 @@ namespace DXMauiApp.Views
         public RegisterPage()
         {
             InitializeComponent();
-            BindingContext = new RegisterViewModel();
+            BindingContext = ViewModel = new RegisterViewModel();
+            ViewModel.OnAppearing();
+        }
+
+        RegisterViewModel ViewModel { get; }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            ViewModel.OnAppearing();
         }
     }
 }

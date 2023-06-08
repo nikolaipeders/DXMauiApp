@@ -1,8 +1,4 @@
 ﻿using DXMauiApp.ViewModels;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-using System;
-using System.Linq;
 
 namespace DXMauiApp.Views
 {
@@ -12,7 +8,16 @@ namespace DXMauiApp.Views
         public LoginPage()
         {
             InitializeComponent();
-            BindingContext = new LoginViewModel();
+            BindingContext = ViewModel = new LoginViewModel();
+            ViewModel.OnAppearing();
+        }
+
+        LoginViewModel ViewModel { get; }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            ViewModel.OnAppearing();
         }
     }
 }

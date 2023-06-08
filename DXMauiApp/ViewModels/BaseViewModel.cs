@@ -13,10 +13,9 @@ namespace DXMauiApp.ViewModels
         string title = string.Empty;
 
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-
         public INavigationService Navigation => DependencyService.Get<INavigationService>();
-
         public IUserRestService UserService => DependencyService.Get<IUserRestService>();
+        public ILockRestService LockService => DependencyService.Get<ILockRestService>();
 
         public bool IsBusy
         {
@@ -83,6 +82,8 @@ namespace DXMauiApp.ViewModels
                 TokenRequest request = new TokenRequest();
 
                 request.Token = BaseToken.Replace("\"", "");
+
+                MessagingCenter.Send(this, "TokenTransfer", request.Token);
 
                 var result = await UserService.UserConfirmAccessAsync(request);
 

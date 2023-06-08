@@ -6,13 +6,10 @@
          xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
          ios:Page.UseSafeArea="true"
         x:Class= "DXMauiApp.Views.MainPage">
-    
+
     <TabBar>
-        <Tab Title ="Locks" Icon="browse">
-            <ShellContent ContentTemplate="{DataTemplate local:ItemsPage}" Route= "DXMauiApp.Views.ItemsPage" />
-        </Tab>
-        <Tab Title="My lock" Icon="shieldlock">
-            <ShellContent ContentTemplate="{DataTemplate local:LockPage}" Route= "DXMauiApp.Views.LockPage" />
+        <Tab Title="Locks" Icon="browse">
+            <ShellContent ContentTemplate="{DataTemplate local:LocksPage}" Route= "DXMauiApp.Views.LocksPage" />
         </Tab>
         <Tab Title="Account" Icon="accountcircle">
             <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" Route= "DXMauiApp.Views.AccountPage" />

@@ -7,11 +7,11 @@ namespace DXMauiApp.ViewModels
 {
     public class RegisterViewModel : BaseViewModel
     {
-        string userName;
-        public string UserName
+        string name;
+        public string Name
         {
-            get => this.userName;
-            set => SetProperty(ref this.userName, value);
+            get => this.name;
+            set => SetProperty(ref this.name, value);
         }
 
         string mail;
@@ -70,9 +70,7 @@ namespace DXMauiApp.ViewModels
 
         public RegisterViewModel()
         {
-            RegisterCommand = new Command(OnRegisterClicked, ValidateLogin);
-            PropertyChanged +=
-                (_, __) => RegisterCommand.ChangeCanExecute();
+            RegisterCommand = new Command(OnRegisterClicked);
         }
 
         public void OnAppearing()
@@ -84,8 +82,9 @@ namespace DXMauiApp.ViewModels
         {
             User user = new User();
 
-            user.Email = Mail;
-            user.Password = Password;
+            user.name = Name;
+            user.email = Mail;
+            user.password = Password;
 
             var response = await UserService.SaveUserAsync(user, true);
 
@@ -125,15 +124,6 @@ namespace DXMauiApp.ViewModels
             Title = "Register";
             IsResultPopOpen = false;
             ButtonState = true;
-        }
-
-        bool ValidateLogin()
-        {
-            return !String.IsNullOrWhiteSpace(UserName)
-                && !String.IsNullOrWhiteSpace(Mail)
-                && !String.IsNullOrWhiteSpace(Password)
-                && !String.IsNullOrWhiteSpace(ConfirmPassword)
-                && Password.Equals(ConfirmPassword);
         }
     }
 }

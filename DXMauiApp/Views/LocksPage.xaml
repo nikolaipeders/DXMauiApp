@@ -9,15 +9,18 @@
              IconImageSource="browse"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              ios:Page.UseSafeArea="true"
-             x:Class= "DXMauiApp.Views.ItemsPage">
-
-    <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior StatusBarColor="white" StatusBarStyle="DarkContent" />
-    </ContentPage.Behaviors>
-
+             x:Class= "DXMauiApp.Views.LocksPage"
+             xmlns:converters="clr-namespace:DXMauiApp.Services">
+    
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Invites (0)" Command="{Binding AddItemCommand}" />
+        <ToolbarItem Text="Add Lock" Command="{Binding AddLockCommand}" />
     </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:OwnerConverter x:Key="OwnerConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ContentPage.Content>
         <VerticalStackLayout>
@@ -30,37 +33,43 @@
 
             </Label>
 
-            <dxcv:DXCollectionView x:Name="ItemsListView"
-            ItemsSource="{Binding Items}"
-                SelectionMode="None">
-                <dxcv:DXCollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <StackLayout Padding="18,20,10,01" x:DataType="model:Item">
-                                <Label Text="{Binding Text}"
+            <dxcv:DXCollectionView x:Name="LocksListView"
+                                   ItemsSource="{Binding Locks}"
+                                   SelectionMode="None">
+            <dxcv:DXCollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <StackLayout Padding="18,20,10,01" x:DataType="model:Lock">
+                            <Label Text="{Binding name}"
                                         LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontFamily="Roboto"
                                         FontSize="14"
                                         TextColor="{StaticResource NormalText}"/>
-                                <Label Text="{Binding Description}"
+                                <Label Text="{Binding location}"
                                         LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemDetailTextStyle}"
                                         FontFamily="Roboto"
                                         FontSize="12"
                                         TextColor="{StaticResource NormalLightText}"/>
+                                <Label Text="{Binding owner, Converter={StaticResource OwnerConverter}}"
+                                       LineBreakMode="NoWrap"
+                                       Style="{DynamicResource ListItemDetailTextStyle}"
+                                       FontFamily="Roboto"
+                                       FontSize="12"
+                                       TextColor="{StaticResource NormalLightText}" />
                                 <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer
+                                <TapGestureRecognizer
                                             NumberOfTapsRequired="1"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=ItemTapped}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:LocksViewModel}}, Path=LockTapped}"
                                             CommandParameter="{Binding .}">
-                                    </TapGestureRecognizer>
-                                </StackLayout.GestureRecognizers>
-                            </StackLayout>
-                        </Grid>
-                    </DataTemplate>
-                </dxcv:DXCollectionView.ItemTemplate>
-            </dxcv:DXCollectionView>
+                                </TapGestureRecognizer>
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
+                    </Grid>
+                </DataTemplate>
+            </dxcv:DXCollectionView.ItemTemplate>
+        </dxcv:DXCollectionView>
         </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>
