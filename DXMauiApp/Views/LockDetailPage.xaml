@@ -23,9 +23,9 @@
             Margin="0,10"/>
 
         <Label Text="Name:" FontFamily="Roboto" FontSize="12" TextColor="{StaticResource NormalLightText}"/>
-        <Label Text="{Binding LockTitle}" FontFamily="Roboto" FontSize="14" TextColor="{StaticResource NormalText}"/>
+        <Label Text="{Binding Name}" FontFamily="Roboto" FontSize="14" TextColor="{StaticResource NormalText}"/>
         <Label Text="Location:" FontFamily="Roboto" FontSize="12" TextColor="{StaticResource NormalLightText}" />
-        <Label Text="{Binding Description}" FontFamily="Roboto" FontSize="14" TextColor="{StaticResource NormalText}"/>
+        <Label Text="{Binding Location}" FontFamily="Roboto" FontSize="14" TextColor="{StaticResource NormalText}"/>
 
         <BoxView 
             BackgroundColor="#EBEBEB"

@@ -8,6 +8,7 @@
              Title="{Binding Title}"
              IconImageSource="browse"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
              ios:Page.UseSafeArea="true"
              x:Class= "DXMauiApp.Views.LocksPage"
              xmlns:converters="clr-namespace:DXMauiApp.Services">
@@ -24,14 +25,6 @@
 
     <ContentPage.Content>
         <VerticalStackLayout>
-
-            <Label
-                Text="Locks I have access to:"
-                HorizontalOptions="Start"
-                FontSize="18"
-                Padding="18,20,10,0">
-
-            </Label>
 
             <dxcv:DXCollectionView x:Name="LocksListView"
                                    ItemsSource="{Binding Locks}"
@@ -58,6 +51,7 @@
                                        FontFamily="Roboto"
                                        FontSize="12"
                                        TextColor="{StaticResource NormalLightText}" />
+                            
                                 <StackLayout.GestureRecognizers>
                                 <TapGestureRecognizer
                                             NumberOfTapsRequired="1"
@@ -70,6 +64,59 @@
                 </DataTemplate>
             </dxcv:DXCollectionView.ItemTemplate>
         </dxcv:DXCollectionView>
+
+            <!-- action sheet -->
+            <dxco:DXPopup 
+            IsOpen="{Binding IsActionSheetOpen}"
+            AllowScrim="True" 
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Stretch"
+            Margin="16"
+            CornerRadius="16">
+
+                <StackLayout Orientation="Vertical">
+
+                    <Label 
+                    Text="Bind to something"
+                    TextColor="#404144"
+                    Margin="24,16,24,14"
+                    HorizontalTextAlignment="Center"
+                    HorizontalOptions="Center"/>
+
+                    <dxco:SimpleButton
+                    Style="{StaticResource ButtonStyle}"
+                    Text="Go to"
+                    Icon="deletetask"
+                    IconColor="#ff5e61"
+                    TextColor="#ff5e61"
+                    BackgroundColor="Transparent"
+                   Command="{Binding Source={RelativeSource AncestorType={x:Type local:LocksViewModel}}, Path=OpenActionSheetCmd}"/>
+
+                    <dxco:SimpleButton
+                    Style="{StaticResource ButtonStyle}"
+                    Text="Edit"
+                    Icon="deletetask"
+                    IconColor="#ff5e61"
+                    TextColor="#ff5e61"
+                    BackgroundColor="Transparent"
+                    Command="{Binding OpenActionSheetCmd}"/>
+
+                    <BoxView 
+                    BackgroundColor="#EBEBEB"
+                    HeightRequest="1"
+                    Margin="24,0"/>
+
+                    <dxco:SimpleButton 
+                    Text="Cancel"
+                    TextColor="#2088ff"
+                    PressedBackgroundColor="#e8e8e8"
+                    BackgroundColor="Transparent"
+                    Command="{Binding OpenActionSheetCmd}"
+                    Margin="0,0,0,6"/>
+
+                </StackLayout>
+            </dxco:DXPopup>
+
         </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

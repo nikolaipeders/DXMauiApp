@@ -62,11 +62,9 @@ namespace DXMauiApp.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("User successfully saved.");
                     return response;
                 }
-                Debug.WriteLine($"{response.StatusCode}");
-                Debug.WriteLine("REPONSE IS ALSO: " + response);
+
                 return response;
             }
             catch (Exception ex)
@@ -92,8 +90,6 @@ namespace DXMauiApp.Services
                 {
                     string responseJson = await response.Content.ReadAsStringAsync();
                     LoginResponse loginResponse = JsonSerializer.Deserialize<LoginResponse>(responseJson);
-                    Debug.WriteLine("User successfully logged in. Token: " + loginResponse.token);
-                    Debug.WriteLine("User ID: " + loginResponse._id);
                     return loginResponse;
                 }
                 return null;
@@ -112,23 +108,17 @@ namespace DXMauiApp.Services
 
             try
             {
-                Debug.WriteLine("MODEL IS " + request.Token);
-
-                // Create a GET request
                 HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
 
-                // Add a header to the request
                 httpRequest.Headers.Add("token", request.Token);
 
                 HttpResponseMessage response = await _client.SendAsync(httpRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine("User has access.");
                     return response;
                 }
-
-                Debug.WriteLine("SERVICE RESPONSE " + response.Content.ReadAsStringAsync().Result);
+                
                 return response;
             }
             catch (Exception ex)
@@ -144,8 +134,6 @@ namespace DXMauiApp.Services
             try
             {
                 string apiUrl = $"{baseUrl}user/{id}";
-
-                Debug.WriteLine($" API URL IS {apiUrl}");
 
                 _client.DefaultRequestHeaders.Clear();
                 _client.DefaultRequestHeaders.Add("token", token);
@@ -163,7 +151,6 @@ namespace DXMauiApp.Services
 
                     User user = JsonSerializer.Deserialize<User>(responseContent, serializerOptions);
 
-                    Debug.WriteLine("RESULT IS: " + user.email);
                     return user;
                 }
 
@@ -194,12 +181,6 @@ namespace DXMauiApp.Services
 
                 HttpResponseMessage response = await _client.PostAsync(uri, content);
 
-                Debug.WriteLine("RESPONSE IS " + response);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine("User successfully logged in.");
-                }
                 return response;
             }
             catch (Exception ex)

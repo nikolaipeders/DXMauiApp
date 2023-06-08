@@ -2,28 +2,48 @@
 using DXMauiApp.Services;
 using Plugin.Maui.Audio;
 using System.Diagnostics;
+using System.Globalization;
 using System.Web;
 
 namespace DXMauiApp.ViewModels
 {
-    public class LockDetailViewModel : BaseViewModel, IQueryAttributable
+    public class LockDetailViewModel : BaseViewModel
     {
         public const string ViewName = "LockDetailPage";
 
-        public string Id { get; set; }
-
-        string lockTitle;
-        public string LockTitle
+        TokenRequest token;
+        public TokenRequest Token
         {
-            get => this.lockTitle;
-            set => SetProperty(ref this.lockTitle, value);
+            get => this.token;
+            set => SetProperty(ref this.token, value);
         }
 
-        string description;
-        public string Description
+        string id;
+        public string Id
         {
-            get => this.description;
-            set => SetProperty(ref this.description, value);
+            get => this.id;
+            set => SetProperty(ref this.id, value);
+        }
+
+        string lockId;
+        public string LockId
+        {
+            get => this.lockId;
+            set => SetProperty(ref this.lockId, value);
+        }
+
+        string name;
+        public string Name
+        {
+            get => this.name;
+            set => SetProperty(ref this.name, value);
+        }
+
+        string location;
+        public string Location
+        {
+            get => this.location;
+            set => SetProperty(ref this.location, value);
         }
 
         string mail;
@@ -99,6 +119,7 @@ namespace DXMauiApp.ViewModels
 
         public LockDetailViewModel()
         {
+            Token = new TokenRequest();
 
             TakeSnapshotCmd = new Command(TakePhoto);
 
@@ -108,37 +129,45 @@ namespace DXMauiApp.ViewModels
             });
         }
 
-        public async Task LoadItemId(string itemId)
+        public void OnAppearing()
+        {
+            ResetState();
+
+            MessagingCenter.Subscribe<LocksViewModel, (string, string)>(this, "TransferTokenAndId", OnTransferRegistered);
+
+            MessagingCenter.Subscribe<LocksViewModel, string>(this, "TransferLockId", (sender, lockId) =>
+            {
+                LockId = lockId;
+            });
+
+            Debug.WriteLine("LOCK ID IS " + LockId + lockId);
+
+        }
+
+        private void OnTransferRegistered(LocksViewModel sender, (string, string) transferInfo)
+        {
+            Token.Token = transferInfo.Item1;
+
+            Debug.WriteLine("TRANSFER TOKEN IS " + Token.Token + transferInfo.Item1 + transferInfo.Item2);
+        }
+
+        public async Task LoadLockById(string itemId)
         {
             try
             {
-                var item = await DataStore.GetItemAsync(itemId);
-                Id = item.Id;
-                LockTitle = item.Text;
-                Description = item.Description;
+                var item = await LockService.GetLockByIdAsync(Token, itemId);
+                Id = item._id;
+                Name = item.name;
+                Location = item.location;
+
+                var authToken = await SecureStorage.Default.GetAsync("auth_token");
+                Token.Token = authToken.Replace("\"", "");
+
             }
             catch (Exception)
             {
                 System.Diagnostics.Debug.WriteLine("Failed to Load Item");
             }
-        }
-
-        public override async Task InitializeAsync(object parameter)
-        {
-            await LoadItemId(parameter as string);
-        }
-
-        public void OnAppearing()
-        {
-            ResetState();
-
-            GetDetails();
-        }
-
-        public async void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            string id = HttpUtility.UrlDecode(query["id"] as string);
-            await LoadItemId(id);
         }
 
         public async void TakePhoto()
@@ -241,25 +270,8 @@ namespace DXMauiApp.ViewModels
             IsActionSheetOpen = false;
             IsLoading = false;
             ButtonState = true;
-            Title = LockTitle;
+            Title = Name;
             SnapShot = "smartdoor.png";
-        }
-
-        public async void GetDetails()
-        {
-            TokenRequest request = new TokenRequest();
-
-            var authToken = await SecureStorage.Default.GetAsync("auth_token");
-            var id = await SecureStorage.Default.GetAsync("user_id");
-
-            request.Token = authToken.Replace("\"", "");
-
-            User user = await UserService.GetUserByIdAsync(request, id);
-
-            if (user != null)
-            {
-                Mail = user.email;
-            }
         }
     }
 }

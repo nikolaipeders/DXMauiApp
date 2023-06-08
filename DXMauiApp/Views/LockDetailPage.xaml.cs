@@ -5,7 +5,6 @@ namespace DXMauiApp.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LockDetailPage : ContentPage
     {
-
         public LockDetailPage()
         {
             InitializeComponent();

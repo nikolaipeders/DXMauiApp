@@ -70,8 +70,6 @@ namespace DXMauiApp.ViewModels
         {
             BaseToken = await SecureStorage.Default.GetAsync("auth_token");
 
-            System.Diagnostics.Debug.WriteLine("SECURE STORAGE TOKEN IS: " + BaseToken);
-
             if (BaseToken == null || BaseToken.Equals(""))
             {
                 // No value is associated with the key "auth_token", so redirect to login

@@ -1,6 +1,7 @@
 ﻿using DXMauiApp.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,7 @@ namespace DXMauiApp.Services
         string id;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Subscribe to the "AccountRegistered" message
-            MessagingCenter.Subscribe<LocksViewModel, string>(this, "TransferId", OnTransferRegistered);
+            MessagingCenter.Subscribe<LocksViewModel, (string, string)>(this, "TransferTokenAndId", OnTransferRegistered);
 
             string owner = value as string;
 
@@ -29,10 +29,9 @@ namespace DXMauiApp.Services
             throw new NotImplementedException();
         }
 
-        private void OnTransferRegistered(LocksViewModel sender, string transferInfo)
+        private void OnTransferRegistered(LocksViewModel sender, (string, string) transferInfo)
         {
-            // Update email and password fields
-            id = transferInfo;
+            id = transferInfo.Item2;
         }
     }
 }

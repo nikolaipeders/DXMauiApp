@@ -75,7 +75,6 @@ namespace DXMauiApp.ViewModels
             Password = accountInfo.Item2;
         }
 
-
         async void OnLoginClicked()
         {
             User user = new User();

@@ -81,7 +81,6 @@ namespace DXMauiApp.Services
         {
             try
             {
-                Debug.WriteLine("GETALLLOCKS SERICE CALL TOKEN IS " + token.Token);
                 string apiUrl = $"{baseUrl}lock";
 
                 _client.DefaultRequestHeaders.Clear();
@@ -100,7 +99,6 @@ namespace DXMauiApp.Services
 
                     List<Lock> locks = JsonSerializer.Deserialize<List<Lock>>(responseContent, serializerOptions);
 
-                    Debug.WriteLine("RESULT IS: " + locks.Count);
                     return locks;
                 }
 
@@ -120,6 +118,9 @@ namespace DXMauiApp.Services
             {
                 string apiUrl = $"{baseUrl}lock/{id}";
 
+                Debug.WriteLine("URL IS " + apiUrl);
+                Debug.WriteLine("TOKEN IS " + token.Token);
+
                 _client.DefaultRequestHeaders.Clear();
                 _client.DefaultRequestHeaders.Add("token", token.Token);
 
@@ -136,7 +137,6 @@ namespace DXMauiApp.Services
 
                     Lock exiLock = JsonSerializer.Deserialize<Lock>(responseContent, serializerOptions);
 
-                    Debug.WriteLine("RESULT IS: " + exiLock.name);
                     return exiLock ;
                 }
 
