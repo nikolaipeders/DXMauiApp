@@ -14,5 +14,6 @@ namespace DXMauiApp.Services
         Task<HttpResponseMessage> SaveLockAsync(TokenRequest token, Lock newLock, bool isNewItem = false);
         Task<HttpResponseMessage> DeleteLockAsync(TokenRequest request, Lock exiLock);
         Task<HttpResponseMessage> RemoveAccessAsync(TokenRequest request, Lock exiLock, User user);
+        Task<HttpResponseMessage> LeaveLockAsync(TokenRequest request, Lock exiLock);
     }
 }

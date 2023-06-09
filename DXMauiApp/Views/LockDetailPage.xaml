@@ -22,10 +22,6 @@
             HorizontalOptions="Center"
             Margin="0, 20, 0, 0"/>
 
-            <!--<BoxView 
-            BackgroundColor="#EBEBEB"
-            HeightRequest="1"
-            Margin="0,10"/>-->
         </StackLayout>
 
         <StackLayout Grid.Row="1" Spacing="5" Padding="15" VerticalOptions="End">
@@ -118,12 +114,12 @@
 
                     <dxco:SimpleButton
                     Style="{StaticResource ButtonStyle}"
-                    Text="Delete"
+                    Text="Leave lock"
                     Icon="deletetask"
                     IconColor="#ff5e61"
                     TextColor="#ff5e61"
                     BackgroundColor="Transparent"
-                    Command="{Binding OpenActionSheetCmd}"/>
+                    Command="{Binding LeaveLockCmd}"/>
 
                     <BoxView 
                     BackgroundColor="#EBEBEB"

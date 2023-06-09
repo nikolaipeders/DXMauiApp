@@ -153,6 +153,8 @@ namespace DXMauiApp.ViewModels
         public ObservableCollection<User> Accessors { get; set; }
         public Command CloseUserActionSheetCmd { get; set; }
         public Command OpenDeleteActionSheetCmd { get; set; }
+        public Command DeleteLockCmd { get; set; }
+        public Command RemoveUserCmd { get; set; }
         public Command UserTapped { get; }
 
         public LockEditViewModel()
@@ -174,6 +176,10 @@ namespace DXMauiApp.ViewModels
             {
                 IsDeleteActionSheetOpen = !IsDeleteActionSheetOpen;
             });
+
+            DeleteLockCmd = new Command(OnDeleteClicked);
+
+            RemoveUserCmd = new Command(OnRemoveClicked);
 
         }
 
@@ -233,6 +239,82 @@ namespace DXMauiApp.ViewModels
                 SelectedUser = user;
                 IsUserActionSheetOpen = true;
             }
+        }
+
+        async void OnDeleteClicked()
+        {
+            // Prepare sound effects
+            AudioManager am = new AudioManager();
+
+            // State handling
+            ButtonState = false;
+
+            var result = await LockService.DeleteLockAsync(Token, SelectedLock);
+
+            if (result.IsSuccessStatusCode)
+            {
+                ImageUrl = "checked.png";
+                ImageDescription = "Lock deleted!";
+                var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                audioSuccess.Play();
+            }
+
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error";
+                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                audioError.Play();
+            }
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(1500);
+
+            // Reset state
+            ResetState();
+
+            if (result.IsSuccessStatusCode)
+            {
+                await Navigation.GoBackAsync();
+            }
+        }
+
+        async void OnRemoveClicked()
+        {
+            // Prepare sound effects
+            AudioManager am = new AudioManager();
+
+            // State handling
+            ButtonState = false;
+
+            var result = await LockService.RemoveAccessAsync(Token, SelectedLock, SelectedUser);
+
+            if (result.IsSuccessStatusCode)
+            {
+                ImageUrl = "checked.png";
+                ImageDescription = "Removed user!";
+                var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                audioSuccess.Play();
+            }
+
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error";
+                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                audioError.Play();
+            }
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(1500);
+
+            ResetState();
         }
 
         public void ResetState()

@@ -99,6 +99,7 @@ namespace DXMauiApp.ViewModels
 
         public async void OnAppearing()
         {
+            Debug.WriteLine("ON APPEARING CALLED");
             RedirectToLogin();
 
             await GetDetails();
@@ -110,18 +111,25 @@ namespace DXMauiApp.ViewModels
 
         async Task LoadLocks()
         {
+            Debug.WriteLine("LOAD LOCKS CALLED");
+
             try
             {
-                Locks.Clear();
-
                 var locks = await LockService.GetAllLocksAsync(Token);
+
+                // Update the existing Locks collection
+                Locks.Clear();
                 foreach (var item in locks)
                 {
                     Locks.Add(item);
                 }
 
                 ObservableCollection<Lock> uniqueLocks = new ObservableCollection<Lock>(Locks.Distinct());
-                Locks = uniqueLocks;
+                Locks.Clear();
+                foreach (var item in uniqueLocks)
+                {
+                    Locks.Add(item);
+                }
             }
             catch (Exception ex)
             {

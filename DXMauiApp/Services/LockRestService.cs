@@ -74,14 +74,23 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> DeleteLockAsync(TokenRequest request, Lock exiLock)
         {
-            Uri uri = new Uri(baseUrl + "lock/" + exiLock._id);
+            Uri uri = new Uri(baseUrl + "lock");
 
             try
             {
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
+                var jsonObject = new
+                {
+                    _id = exiLock._id
+                };
+
+                string json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 // Add a header
-                requestMessage.Headers.Add("token", request.Token);
+                content.Headers.Add("token", request.Token);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
+                requestMessage.Content = content;
 
                 HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
@@ -97,7 +106,6 @@ namespace DXMauiApp.Services
                 return null;
             }
         }
-
 
         public async Task<List<Lock>> GetAllLocksAsync(TokenRequest token)
         {
@@ -174,7 +182,75 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> RemoveAccessAsync(TokenRequest request, Lock exiLock, User user)
         {
-            throw new NotImplementedException();
+            Uri uri = new Uri(baseUrl + "lock/remove_access");
+
+            try
+            {
+                var jsonObject = new
+                {
+                    lock_id = exiLock._id,
+                    user_id = user._id
+                };
+
+                string json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Add a header
+                content.Headers.Add("token", request.Token);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
+                requestMessage.Content = content;
+                requestMessage.Headers.Add("token", request.Token);
+
+                HttpResponseMessage response = await _client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return response;
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        } 
+        
+        public async Task<HttpResponseMessage> LeaveLockAsync(TokenRequest request, Lock exiLock)
+        {
+            Uri uri = new Uri(baseUrl + "lock/leave");
+
+            try
+            {
+                var jsonObject = new
+                {
+                    lock_id = exiLock._id
+                };
+
+                string json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Add a header
+                content.Headers.Add("token", request.Token);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, uri);
+                requestMessage.Content = content;
+                requestMessage.Headers.Add("token", request.Token);
+
+                HttpResponseMessage response = await _client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return response;
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

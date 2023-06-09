@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using DXMauiApp.Models;
 using DXMauiApp.Services;
+using Java.Lang.Annotation;
 using Plugin.Maui.Audio;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Web;
@@ -17,6 +19,13 @@ namespace DXMauiApp.ViewModels
         {
             get => this.token;
             set => SetProperty(ref this.token, value);
+        }
+
+        Lock selectedLock;
+        public Lock SelectedLock
+        {
+            get => this.selectedLock;
+            set => SetProperty(ref this.selectedLock, value);
         }
 
         string userId;
@@ -117,16 +126,23 @@ namespace DXMauiApp.ViewModels
 
         public Command TakeSnapshotCmd { get; set; }
         public Command OpenActionSheetCmd { get; set; }
+        public Command LeaveLockCmd { get; set; }
 
         public LockDetailViewModel()
         {
             Token = new TokenRequest();
+            SelectedLock = new Lock();
             TakeSnapshotCmd = new Command(TakePhoto);
+
             OpenActionSheetCmd = new Command(() =>
             {
                 IsActionSheetOpen = !IsActionSheetOpen;
             });
 
+            LeaveLockCmd = new Command(() =>
+            {
+                OnLeaveClicked();
+            });
         }
 
         public async void OnAppearing()
@@ -138,10 +154,6 @@ namespace DXMauiApp.ViewModels
             LockId = await SecureStorage.Default.GetAsync("lock_id");
             UserId = await SecureStorage.Default.GetAsync("user_id");
 
-            Debug.Write("SECURE TOKEN IS " + Token.Token);
-            Debug.Write("SECURE USER ID IS " + UserId);
-            Debug.Write("SECURE LOCK ID IS " + LockId);
-
             await LoadLockById();
         }
 
@@ -149,10 +161,9 @@ namespace DXMauiApp.ViewModels
         {
             try
             {
-                var item = await LockService.GetLockByIdAsync(Token, LockId);
-                Name = item.name;
-                Location = item.location;
-
+                SelectedLock = await LockService.GetLockByIdAsync(Token, LockId);
+                Name = SelectedLock.name;
+                Location = SelectedLock.location;
             }
             catch (Exception)
             {
@@ -252,6 +263,47 @@ namespace DXMauiApp.ViewModels
 
             // Reset state
             ResetState();
+        }
+
+        async void OnLeaveClicked()
+        {
+            // Prepare sound effects
+            AudioManager am = new AudioManager();
+
+            // State handling
+            ButtonState = false;
+
+            var result = await LockService.LeaveLockAsync(Token, SelectedLock);
+
+            if (result.IsSuccessStatusCode)
+            {
+                ImageUrl = "checked.png";
+                ImageDescription = "Leaved lock!";
+                var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                audioSuccess.Play();
+            }
+
+            else
+            {
+                ImageUrl = "error.png";
+                ImageDescription = "Error";
+                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                audioError.Play();
+            }
+
+            // Show status of call
+            IsResultPopOpen = true;
+
+            // Return
+            await Task.Delay(1500);
+
+            // Reset state
+            ResetState();
+
+            if (result.IsSuccessStatusCode)
+            {
+                await Navigation.GoBackAsync();
+            }
         }
 
         public void ResetState()
