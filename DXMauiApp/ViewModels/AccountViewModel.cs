@@ -1,4 +1,5 @@
-﻿using DevExpress.Data.Mask.Internal;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using DevExpress.Data.Mask.Internal;
 using DevExpress.Services.Implementation;
 using DXMauiApp.Models;
 using DXMauiApp.Services;
@@ -107,11 +108,12 @@ namespace DXMauiApp.ViewModels
 
             UpdateCommand = new Command(OnUpdateClicked);
 
-            TakePictureCommand = new Command(TakePhoto); 
+            TakePictureCommand = new Command(TakePhoto);
         }
 
         public void OnAppearing()
         {
+            Debug.WriteLine("SECOND PRINT");
             RedirectToLogin();
 
             GetDetails();

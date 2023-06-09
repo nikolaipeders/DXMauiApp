@@ -1,4 +1,7 @@
-﻿using DXMauiApp.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using DXMauiApp.Models;
+using DXMauiApp.Services;
+using Java.Util.Concurrent.Locks;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -36,6 +39,17 @@ namespace DXMauiApp.ViewModels
             get => this.lockId;
             set => SetProperty(ref this.lockId, value);
         }
+
+        bool isOwner = false;
+        public bool IsOwner
+        {
+            get => this.isOwner;
+            set
+            {
+                SetProperty(ref this.isOwner, value);
+            }
+        }
+
         bool isActionSheetOpen = false;
         public bool IsActionSheetOpen
         {
@@ -48,9 +62,11 @@ namespace DXMauiApp.ViewModels
 
         public ObservableCollection<Lock> Locks { get; set; }
         public Command LoadLocksCommand { get; }
+        public Command NavigateToLockCommand { get; }
+        public Command NavigateToEditorCommand { get; }
         public Command AddLockCommand { get; }
         public Command<Lock> LockTapped { get; }
-        public Command OpenActionSheetCmd { get; set; }
+        public Command CloseActionSheetCmd { get; set; }
 
         public LocksViewModel()
         {
@@ -60,9 +76,24 @@ namespace DXMauiApp.ViewModels
             LockTapped = new Command<Lock>(OnLockSelected);
             AddLockCommand = new Command(OnAddLock);
 
-            OpenActionSheetCmd = new Command(() =>
+            CloseActionSheetCmd = new Command(() =>
             {
-                IsActionSheetOpen = !IsActionSheetOpen;
+                IsActionSheetOpen = false;
+                IsOwner = false;
+            });
+
+            NavigateToLockCommand = new Command(() => 
+            {
+                IsActionSheetOpen = false;
+                SelectedLock = null;
+                Navigation.NavigateToAsync<LockDetailViewModel>();
+            });
+
+            NavigateToEditorCommand = new Command(() =>
+            {
+                IsActionSheetOpen = false;
+                SelectedLock = null;
+                Navigation.NavigateToAsync<LockEditViewModel>();
             });
         }
 
@@ -88,6 +119,9 @@ namespace DXMauiApp.ViewModels
                 {
                     Locks.Add(item);
                 }
+
+                ObservableCollection<Lock> uniqueLocks = new ObservableCollection<Lock>(Locks.Distinct());
+                Locks = uniqueLocks;
             }
             catch (Exception ex)
             {
@@ -105,8 +139,18 @@ namespace DXMauiApp.ViewModels
             if (exiLock == null)
                 return;
 
-            MessagingCenter.Send(this, "TransferLockId", exiLock._id);
-            await Navigation.NavigateToAsync<LockDetailViewModel>(exiLock._id);
+            // Check if the action sheet is already open
+            if (!IsActionSheetOpen)
+            {
+                await SecureStorage.Default.SetAsync("lock_id", exiLock._id);
+                SelectedLock = exiLock;
+
+                if (SelectedLock != null && SelectedLock.owner == Id)
+                {
+                    IsOwner = true;
+                }
+                IsActionSheetOpen = true;
+            }
         }
 
         public async Task GetDetails()
@@ -116,9 +160,12 @@ namespace DXMauiApp.ViewModels
 
             Id = await SecureStorage.Default.GetAsync("user_id");
 
+            WeakReferenceMessenger.Default.Send(new MessagePublisher(Id, Token.Token));
+
             // Publish message with email and password
             Debug.WriteLine("LOCKSVIEWMODEL TOKEN.TOKEN IS " + Token.Token);
-            MessagingCenter.Send(this, "TransferTokenAndId", (Token.Token, Id));
+            Debug.WriteLine("LOCKSVIEWMODEL ID IS " + Id);
+
         }
     }
 }

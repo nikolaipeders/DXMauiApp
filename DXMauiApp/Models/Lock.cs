@@ -12,7 +12,8 @@ namespace DXMauiApp.Models
         public string serial { get; set; }
         public string name { get; set; }
         public string location { get; set; }
-        public bool active { get; set; }
+        public List<string> lock_access { get; set; }
         public string owner { get; set; }
+        public bool active { get; set; }
     }
 }

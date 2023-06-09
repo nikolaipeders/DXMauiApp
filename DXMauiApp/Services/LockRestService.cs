@@ -74,8 +74,30 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> DeleteLockAsync(TokenRequest request, Lock exiLock)
         {
-            throw new NotImplementedException();
+            Uri uri = new Uri(baseUrl + "lock/" + exiLock._id);
+
+            try
+            {
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Delete, uri);
+
+                // Add a header
+                requestMessage.Headers.Add("token", request.Token);
+
+                HttpResponseMessage response = await _client.SendAsync(requestMessage);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return response;
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
 
         public async Task<List<Lock>> GetAllLocksAsync(TokenRequest token)
         {

@@ -1,4 +1,5 @@
-﻿using DXMauiApp.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using DXMauiApp.Models;
 using DXMauiApp.Services;
 using Plugin.Maui.Audio;
 using System.Diagnostics;
@@ -18,11 +19,11 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.token, value);
         }
 
-        string id;
-        public string Id
+        string userId;
+        public string UserId
         {
-            get => this.id;
-            set => SetProperty(ref this.id, value);
+            get => this.userId;
+            set => SetProperty(ref this.userId, value);
         }
 
         string lockId;
@@ -120,48 +121,37 @@ namespace DXMauiApp.ViewModels
         public LockDetailViewModel()
         {
             Token = new TokenRequest();
-
             TakeSnapshotCmd = new Command(TakePhoto);
-
             OpenActionSheetCmd = new Command(() =>
             {
                 IsActionSheetOpen = !IsActionSheetOpen;
             });
+
         }
 
-        public void OnAppearing()
+        public async void OnAppearing()
         {
             ResetState();
 
-            MessagingCenter.Subscribe<LocksViewModel, (string, string)>(this, "TransferTokenAndId", OnTransferRegistered);
+            var authToken = await SecureStorage.Default.GetAsync("auth_token");
+            Token.Token = authToken.Replace("\"", "");
+            LockId = await SecureStorage.Default.GetAsync("lock_id");
+            UserId = await SecureStorage.Default.GetAsync("user_id");
 
-            MessagingCenter.Subscribe<LocksViewModel, string>(this, "TransferLockId", (sender, lockId) =>
-            {
-                LockId = lockId;
-            });
+            Debug.Write("SECURE TOKEN IS " + Token.Token);
+            Debug.Write("SECURE USER ID IS " + UserId);
+            Debug.Write("SECURE LOCK ID IS " + LockId);
 
-            Debug.WriteLine("LOCK ID IS " + LockId + lockId);
-
+            await LoadLockById();
         }
 
-        private void OnTransferRegistered(LocksViewModel sender, (string, string) transferInfo)
-        {
-            Token.Token = transferInfo.Item1;
-
-            Debug.WriteLine("TRANSFER TOKEN IS " + Token.Token + transferInfo.Item1 + transferInfo.Item2);
-        }
-
-        public async Task LoadLockById(string itemId)
+        public async Task LoadLockById()
         {
             try
             {
-                var item = await LockService.GetLockByIdAsync(Token, itemId);
-                Id = item._id;
+                var item = await LockService.GetLockByIdAsync(Token, LockId);
                 Name = item.name;
                 Location = item.location;
-
-                var authToken = await SecureStorage.Default.GetAsync("auth_token");
-                Token.Token = authToken.Replace("\"", "");
 
             }
             catch (Exception)

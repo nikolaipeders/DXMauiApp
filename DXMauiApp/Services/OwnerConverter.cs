@@ -1,4 +1,5 @@
-﻿using DXMauiApp.ViewModels;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using DXMauiApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,10 +13,18 @@ namespace DXMauiApp.Services
     public class OwnerConverter : IValueConverter
     {
         string id;
+
+        public OwnerConverter()
+        {
+            WeakReferenceMessenger.Default.Register<MessagePublisher>(this, (r, m) =>
+            {
+                id = m.Value.Item1;
+                Debug.WriteLine("CONVERTER ID IS " + id);
+            });
+        }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            MessagingCenter.Subscribe<LocksViewModel, (string, string)>(this, "TransferTokenAndId", OnTransferRegistered);
-
             string owner = value as string;
 
             if (owner != null && id != null && owner.Equals(id))
@@ -27,11 +36,6 @@ namespace DXMauiApp.Services
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
-        }
-
-        private void OnTransferRegistered(LocksViewModel sender, (string, string) transferInfo)
-        {
-            id = transferInfo.Item2;
         }
     }
 }

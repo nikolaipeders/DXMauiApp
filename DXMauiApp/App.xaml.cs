@@ -19,6 +19,7 @@ namespace DXMauiApp
             DependencyService.Register<LockRestService>();
 
             Routing.RegisterRoute(typeof(LockDetailPage).FullName, typeof(LockDetailPage));
+            Routing.RegisterRoute(typeof(LockEditPage).FullName, typeof(LockEditPage));
             Routing.RegisterRoute(typeof(NewItemPage).FullName, typeof(NewItemPage));
             Routing.RegisterRoute(typeof(LoginPage).FullName, typeof(LoginPage));
             Routing.RegisterRoute(typeof(RegisterPage).FullName, typeof(RegisterPage));
