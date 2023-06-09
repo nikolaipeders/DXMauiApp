@@ -153,7 +153,7 @@ namespace DXMauiApp.ViewModels
                 await SecureStorage.Default.SetAsync("lock_id", exiLock._id);
                 SelectedLock = exiLock;
 
-                if (SelectedLock != null && SelectedLock.owner == Id)
+                if (SelectedLock != null && SelectedLock.owner == Id || SelectedLock.owner == Id)
                 {
                     IsOwner = true;
                 }
@@ -169,11 +169,6 @@ namespace DXMauiApp.ViewModels
             Id = await SecureStorage.Default.GetAsync("user_id");
 
             WeakReferenceMessenger.Default.Send(new MessagePublisher(Id, Token.Token));
-
-            // Publish message with email and password
-            Debug.WriteLine("LOCKSVIEWMODEL TOKEN.TOKEN IS " + Token.Token);
-            Debug.WriteLine("LOCKSVIEWMODEL ID IS " + Id);
-
         }
     }
 }

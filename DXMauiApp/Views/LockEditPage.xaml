@@ -13,14 +13,14 @@
              x:Class= "DXMauiApp.Views.LockEditPage">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Send invite" Command="{Binding AddLockCommand}" />
+        <ToolbarItem Text="Send invite" Command="{Binding OpenSendInviteActionSheetCmd}" />
     </ContentPage.ToolbarItems>
 
     <StackLayout VerticalOptions="End" Spacing="5" Padding="15">
 
-        <dxe:TextEdit Text="{Binding Name}" LabelText="Name" Margin="0" Grid.Row="1" />
-        <dxe:TextEdit Text="{Binding Location}" LabelText="Location" Margin="0" Grid.Row="1" />
-        <dxe:TextEdit Text="{Binding Serial}" LabelText="Serial" Margin="0" Grid.Row="1" />
+        <dxe:TextEdit Text="{Binding SelectedLock.name}" LabelText="Name" Margin="0" Grid.Row="1" />
+        <dxe:TextEdit Text="{Binding SelectedLock.location}" LabelText="Location" Margin="0" Grid.Row="1" />
+        <dxe:TextEdit Text="{Binding SelectecLock.serial}" LabelText="Serial" Margin="0" Grid.Row="1" />
 
         <Label
             Text="People with access: "
@@ -72,7 +72,7 @@
             Text="Update lock"
             Margin="0, 10, 0, 0"
             Style="{StaticResource PrimaryButton}"
-            Command="{Binding OpenActionSheetCmd}">
+            Command="{Binding UpdateLockCmd}">
             </Button>
 
             <Button
@@ -205,7 +205,51 @@
             </StackLayout>
         </dxco:DXPopup>
 
+        <!-- send invite action sheet -->
+        <dxco:DXPopup 
+            IsOpen="{Binding IsSendInviteActionSheetOpen}"
+            AllowScrim="True" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            Margin="16"
+            CornerRadius="16">
 
+            <StackLayout Orientation="Vertical">
 
+                <Label 
+                    Text="Send invite to: "
+                    TextColor="#404144"
+                    Margin="24,16,24,14"
+                    HorizontalTextAlignment="Center"
+                    HorizontalOptions="Center"/>
+
+                <dxe:TextEdit 
+                    Text="{Binding Mail}" 
+                    LabelText="Email"
+                    Margin="15"
+                    BackgroundColor="White"/>
+
+                <dxco:SimpleButton
+                    Text="Send"
+                    Icon="deletetask"
+                    IconColor="#ff5e61"
+                    TextColor="#ff5e61"
+                    BackgroundColor="Transparent"
+                    Command="{Binding SendInviteCmd}"/>
+
+                <BoxView 
+                    BackgroundColor="#EBEBEB"
+                    HeightRequest="1"
+                    Margin="24,0"/>
+
+                <dxco:SimpleButton 
+                    Text="Cancel"
+                    TextColor="#2088ff"
+                    PressedBackgroundColor="#e8e8e8"
+                    BackgroundColor="Transparent"
+                    Command="{Binding OpenSendInviteActionSheetCmd}"
+                    Margin="0,0,0,6"/>
+            </StackLayout>
+        </dxco:DXPopup>
     </StackLayout>
 </ContentPage>

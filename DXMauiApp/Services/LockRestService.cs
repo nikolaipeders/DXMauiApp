@@ -35,7 +35,13 @@ namespace DXMauiApp.Services
                 string json;
                 if (!isNewItem)
                 {
-                    json = JsonSerializer.Serialize(newLock, _serializerOptions);
+                    var jsonObject = new
+                    {
+                        _id = newLock._id,
+                        name = newLock.name,
+                        location = newLock.location,
+                    };
+                    json = JsonSerializer.Serialize(jsonObject, _serializerOptions);
                 }
                 else
                 {

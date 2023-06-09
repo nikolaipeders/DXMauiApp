@@ -5,6 +5,11 @@
              xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
              Title="{Binding Title}"
              x:Class= "DXMauiApp.Views.AccountPage">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Invites" Command="{Binding AddLockCommand}" />
+    </ContentPage.ToolbarItems>
+
     <ContentPage.Content>
         <Grid ColumnSpacing="20" Padding="15" VerticalOptions="Center">
             <Grid.RowDefinitions>

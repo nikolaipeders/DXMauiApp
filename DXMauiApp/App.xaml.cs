@@ -13,10 +13,10 @@ namespace DXMauiApp
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
             DependencyService.Register<NavigationService>();
             DependencyService.Register<UserRestService>();
             DependencyService.Register<LockRestService>();
+            DependencyService.Register<InviteRestService>();
 
             Routing.RegisterRoute(typeof(LockDetailPage).FullName, typeof(LockDetailPage));
             Routing.RegisterRoute(typeof(LockEditPage).FullName, typeof(LockEditPage));

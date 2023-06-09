@@ -12,10 +12,10 @@ namespace DXMauiApp.ViewModels
         bool isBusy = false;
         string title = string.Empty;
 
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
         public INavigationService Navigation => DependencyService.Get<INavigationService>();
         public IUserRestService UserService => DependencyService.Get<IUserRestService>();
         public ILockRestService LockService => DependencyService.Get<ILockRestService>();
+        public IInviteRestService InviteService => DependencyService.Get<IInviteRestService>();
 
         public bool IsBusy
         {
