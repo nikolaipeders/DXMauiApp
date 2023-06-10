@@ -91,6 +91,9 @@
 	  <Compile Update="Views\LockDetailPage.xaml.cs">
 	    <DependentUpon>LockDetailPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\InvitesPage.xaml.cs">
+	    <DependentUpon>InvitesPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\LocksPage.xaml.cs">
 	    <DependentUpon>LocksPage.xaml</DependentUpon>
 	  </Compile>
@@ -102,6 +105,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\LockEditPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\InvitesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\RegisterPage.xaml">

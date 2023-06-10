@@ -10,42 +10,32 @@
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:dxco="clr-namespace:DevExpress.Maui.Controls;assembly=DevExpress.Maui.Controls"
              ios:Page.UseSafeArea="true"
-             x:Class= "DXMauiApp.Views.LocksPage"
+             x:Class= "DXMauiApp.Views.InvitesPage"
              xmlns:converters="clr-namespace:DXMauiApp.Services">
-    
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add Lock" Command="{Binding AddLockCommand}" />
-    </ContentPage.ToolbarItems>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:OwnerConverter x:Key="OwnerConverter" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
 
     <ContentPage.Content>
         <VerticalStackLayout>
 
-            <dxcv:DXCollectionView x:Name="LocksListView"
-                                   ItemsSource="{Binding Locks}"
+            <dxcv:DXCollectionView x:Name="InvitesListView"
+                                   ItemsSource="{Binding Invites}"
                                    SelectionMode="None">
             <dxcv:DXCollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <StackLayout Padding="18,20,10,01" x:DataType="model:Lock">
-                            <Label Text="{Binding name}"
+                        <StackLayout Padding="18,20,10,01" x:DataType="model:Invite">
+                            <Label Text="{Binding lock_id}"
                                         LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontFamily="Roboto"
                                         FontSize="14"
                                         TextColor="{StaticResource NormalText}"/>
-                                <Label Text="{Binding location}"
+                                <Label Text="{Binding from}"
                                         LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemDetailTextStyle}"
                                         FontFamily="Roboto"
                                         FontSize="12"
                                         TextColor="{StaticResource NormalLightText}"/>
-                                <Label Text="{Binding owner, Converter={StaticResource OwnerConverter}}"
+                                <Label Text="{Binding date}"
                                        LineBreakMode="NoWrap"
                                        Style="{DynamicResource ListItemDetailTextStyle}"
                                        FontFamily="Roboto"
@@ -55,7 +45,7 @@
                                 <StackLayout.GestureRecognizers>
                                 <TapGestureRecognizer
                                             NumberOfTapsRequired="1"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:LocksViewModel}}, Path=LockTapped}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:InvitesViewModel}}, Path=InviteTapped}"
                                             CommandParameter="{Binding .}">
                                 </TapGestureRecognizer>
                             </StackLayout.GestureRecognizers>
@@ -64,43 +54,6 @@
                 </DataTemplate>
             </dxcv:DXCollectionView.ItemTemplate>
         </dxcv:DXCollectionView>
-
-            <!-- result popup -->
-            <dxco:DXPopup 
-                x:Name="resultPopup"
-                AllowScrim="True"
-                VerticalAlignment="Center"
-                IsOpen="{Binding IsResultPopOpen}"
-                AnimationDuration="00:00:00.500">
-
-                <Grid 
-                WidthRequest="300"
-                VerticalOptions="Center"
-                BackgroundColor="AliceBlue">
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Image 
-                    Grid.Row="0"
-                        Source="{Binding ImageUrl}" 
-                        Aspect="AspectFit" 
-                        WidthRequest="250" 
-                        HeightRequest="200" 
-                        HorizontalOptions="Center"
-                        Margin="20, 20, 20, 10"/>
-
-                    <Label
-                    Grid.Row="1"
-                    VerticalTextAlignment="Center"
-                    HorizontalOptions="Center"
-                    Text="{Binding ImageDescription}"
-                    FontSize="14"
-                    Margin="10, 10, 20, 20"/>
-                </Grid>
-            </dxco:DXPopup>
 
             <!-- action sheet -->
             <dxco:DXPopup 
@@ -114,7 +67,7 @@
                 <StackLayout Orientation="Vertical">
 
                     <Label 
-                    Text="{Binding SelectedLock.name}"
+                    Text="{Binding SelectedInvite.name}"
                     TextColor="#404144"
                     Margin="24,16,24,14"
                     HorizontalTextAlignment="Center"
@@ -122,22 +75,21 @@
 
                     <dxco:SimpleButton
                     Style="{StaticResource ButtonStyle}"
-                    Text="Go to"
+                    Text="Accept"
                     Icon="deletetask"
                     IconColor="#ff5e61"
                     TextColor="#ff5e61"
                     BackgroundColor="Transparent"
-                   Command="{Binding Source={RelativeSource AncestorType={x:Type local:LocksViewModel}}, Path=NavigateToLockCommand}"/>
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:InvitesViewModel}}, Path=AcceptInviteCommand}"/>
 
                     <dxco:SimpleButton
                     Style="{StaticResource ButtonStyle}"
-                    Text="Edit"
+                    Text="Decline"
                     Icon="deletetask"
                     IconColor="#ff5e61"
                     TextColor="#ff5e61"
                     BackgroundColor="Transparent"
-                        IsVisible="{Binding IsOwner}"
-                    Command="{Binding NavigateToEditorCommand}"/>
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:InvitesViewModel}}, Path=DeclineInviteCommand}"/>
 
                     <BoxView 
                     BackgroundColor="#EBEBEB"

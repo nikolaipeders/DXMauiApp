@@ -60,6 +60,40 @@ namespace DXMauiApp.ViewModels
             }
         }
 
+        string imageUrl;
+        public string ImageUrl
+        {
+            get => this.imageUrl;
+            set => SetProperty(ref this.imageUrl, value);
+        }
+
+        string imageDescription;
+        public string ImageDescription
+        {
+            get => this.imageDescription;
+            set => SetProperty(ref this.imageDescription, value);
+        }
+
+        bool isLoading = false;
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                SetProperty(ref this.isLoading, value);
+            }
+        }
+
+        bool isResultPopOpen = false;
+        public bool IsResultPopOpen
+        {
+            get => this.isResultPopOpen;
+            set
+            {
+                SetProperty(ref this.isResultPopOpen, value);
+            }
+        }
+
         public ObservableCollection<Lock> Locks { get; set; }
         public Command LoadLocksCommand { get; }
         public Command NavigateToLockCommand { get; }
@@ -70,6 +104,7 @@ namespace DXMauiApp.ViewModels
 
         public LocksViewModel()
         {
+
             Title = "Locks";
             Token = new TokenRequest();
             Locks = new ObservableCollection<Lock>();
@@ -99,7 +134,6 @@ namespace DXMauiApp.ViewModels
 
         public async void OnAppearing()
         {
-            Debug.WriteLine("ON APPEARING CALLED");
             RedirectToLogin();
 
             await GetDetails();
@@ -134,6 +168,7 @@ namespace DXMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                await CheckStatus();
             }
         }
 
@@ -164,11 +199,42 @@ namespace DXMauiApp.ViewModels
         public async Task GetDetails()
         {
             var authToken = await SecureStorage.Default.GetAsync("auth_token");
-            Token.Token = authToken.Replace("\"", "");
+            var user_id = await SecureStorage.Default.GetAsync("user_id");
 
-            Id = await SecureStorage.Default.GetAsync("user_id");
+            if (authToken != null && user_id != null)
+            {
+                Token.Token = authToken.Replace("\"", "");
+                Id = await SecureStorage.Default.GetAsync("user_id");
+
+            }
 
             WeakReferenceMessenger.Default.Send(new MessagePublisher(Id, Token.Token));
+        }
+
+        public async Task CheckStatus()
+        {
+            while (true)
+            {
+                try
+                {
+                    var result = await ServerService.GetStatusAsync();
+
+                    if (result != null && result.IsSuccessStatusCode)
+                    {
+                        IsResultPopOpen = false;
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ImageUrl = "error.png";
+                    ImageDescription = "Server is down";
+
+                    IsResultPopOpen = true;
+                }
+                // Wait for 15 seconds before checking again
+                await Task.Delay(15000);
+            }
         }
     }
 }

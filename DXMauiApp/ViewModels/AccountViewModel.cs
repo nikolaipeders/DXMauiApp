@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using Com.Google.Android.Exoplayer2.Analytics;
+using CommunityToolkit.Mvvm.Messaging;
 using DevExpress.Data.Mask.Internal;
 using DevExpress.Services.Implementation;
 using DXMauiApp.Models;
@@ -14,6 +15,13 @@ namespace DXMauiApp.ViewModels
 {
     public class AccountViewModel : BaseViewModel
     {
+        TokenRequest request;
+        public TokenRequest Request
+        {
+            get => this.request;
+            set => SetProperty(ref this.request, value);
+        }
+
         string name;
         public string Name
         {
@@ -42,27 +50,27 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.confirmPassword, value);
         }
 
-        string imageBase64;
+        string imageBase64 = string.Empty;
         public string ImageBase64
         {
             get => this.imageBase64;
             set => SetProperty(ref this.imageBase64, value);
         }
-        
+
         string instructions;
         public string Instructions
         {
             get => this.instructions;
             set => SetProperty(ref this.instructions, value);
         }
-        
+
         bool buttonState;
         public bool ButtonState
         {
             get => this.buttonState;
             set => SetProperty(ref this.buttonState, value);
         }
-        
+
         ImageSource snapShot;
         public ImageSource SnapShot
         {
@@ -86,6 +94,16 @@ namespace DXMauiApp.ViewModels
             set => SetProperty(ref this.imageDescription, value);
         }
 
+        bool isLoading = false;
+        public bool IsLoading
+        {
+            get => this.isLoading;
+            set
+            {
+                SetProperty(ref this.isLoading, value);
+            }
+        }
+
         bool isResultPopOpen = false;
         public bool IsResultPopOpen
         {
@@ -96,11 +114,14 @@ namespace DXMauiApp.ViewModels
             }
         }
 
+        public Command NavigateToInvitesCmd { get; }
         public Command TakePictureCommand { get; }
         public Command UpdateCommand { get; }
         public AccountViewModel()
         {
             Title = "My account";
+
+            Request = new TokenRequest();
 
             ButtonState = true;
 
@@ -109,11 +130,15 @@ namespace DXMauiApp.ViewModels
             UpdateCommand = new Command(OnUpdateClicked);
 
             TakePictureCommand = new Command(TakePhoto);
+
+            NavigateToInvitesCmd = new Command(() =>
+            {
+                Navigation.NavigateToAsync<InvitesViewModel>();
+            });
         }
 
         public void OnAppearing()
         {
-            Debug.WriteLine("SECOND PRINT");
             RedirectToLogin();
 
             GetDetails();
@@ -151,83 +176,102 @@ namespace DXMauiApp.ViewModels
 
         async void OnUpdateClicked()
         {
-            // Prepare sound effects
-            AudioManager am = new AudioManager();
-
-            // State handling
-            ButtonState = false;
-
-            // Do REST magic
-            User user = new User();
-
-            user.name = Name;
-            user.email = Mail;
-            user.password = Password;
-            if (ImageBase64 != null && ImageBase64.Length > 5)
-            {   
-                user.image = "data:image/jpeg;base64," + ImageBase64;
-            }
-
-            var result = await UserService.SaveUserAsync(user, false);
-
-            if (result.IsSuccessStatusCode)
+            try
             {
-                ImageUrl = "checked.png";
-                ImageDescription = "Account updated!";
-                var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
-                audioSuccess.Play();
-            }
+                // Prepare sound effects
+                AudioManager am = new AudioManager();
 
-            else
+                // Show loading screen
+                IsLoading = true;
+                ImageUrl = "";
+                ImageDescription = "Verifying...";
+                IsResultPopOpen = true;
+
+                User user = new User();
+
+                user.name = Name;
+                user.email = Mail;
+                user.password = Password;
+                if (ImageBase64 != null && ImageBase64.Length > 5)
+                {
+                    user.image = "data:image/jpeg;base64," + ImageBase64;
+                }
+
+                var result = await UserService.UpdateUserAsync(Request, user);
+
+                IsLoading = false;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    ImageUrl = "checked.png";
+                    ImageDescription = "Account updated!";
+                    var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
+                    audioSuccess.Play();
+                }
+                else
+                {
+                    ImageUrl = "error.png";
+                    ImageDescription = "Error";
+                    var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
+                    audioError.Play();
+                }
+
+                // Show status of call
+                IsResultPopOpen = true;
+
+                // Return
+                await Task.Delay(1500);
+
+                // Reset state
+                ResetState();
+            }
+            catch (Exception ex)
             {
-                ImageUrl = "error.png";
-                ImageDescription = "Error";
-                var audioError = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("wrong.mp3"));
-                audioError.Play();
+                Console.WriteLine($"Error: {ex.Message}");
             }
-
-            // Show status of call
-            IsResultPopOpen = true;
-
-            // Return
-            await Task.Delay(1500);
-
-            // Reset state
-            ResetState();
         }
 
         public void ResetState()
         {
             IsResultPopOpen = false;
+            IsLoading = false;
             ButtonState = true;
         }
 
         public async void GetDetails()
         {
-            TokenRequest request = new TokenRequest();
-
-            var authToken = await SecureStorage.Default.GetAsync("auth_token");
-            var id = await SecureStorage.Default.GetAsync("user_id");
-
-            request.Token = authToken.Replace("\"", "");
-
-            User user = await UserService.GetUserByIdAsync(request, id);
-
-            if (user != null)
+            try
             {
-                Name = user.name;
-                Mail = user.email;
+                var authToken = await SecureStorage.Default.GetAsync("auth_token");
+                var user_id = await SecureStorage.Default.GetAsync("user_id");
 
-                if (user.image != null)
+                if (authToken != null && user_id != null)
                 {
-                    SnapShot = user.image;
+                    Request.Token = authToken.Replace("\"", "");
+
                 }
-                else
+
+                User user = await UserService.GetUserByIdAsync(Request, user_id);
+
+                if (user != null)
                 {
-                    SnapShot = "user.png";
+                    Name = user.name;
+                    Mail = user.email;
+
+                    if (user.image != null)
+                    {
+                        SnapShot = user.image;
+                    }
+                    else
+                    {
+                        SnapShot = "user.png";
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
-
     }
 }

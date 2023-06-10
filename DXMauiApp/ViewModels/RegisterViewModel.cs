@@ -86,7 +86,7 @@ namespace DXMauiApp.ViewModels
             user.email = Mail;
             user.password = Password;
 
-            var response = await UserService.SaveUserAsync(user, true);
+            var response = await UserService.CreateUserAsync(user);
 
             if (response != null)
             {

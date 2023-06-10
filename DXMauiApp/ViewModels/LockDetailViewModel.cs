@@ -208,25 +208,15 @@ namespace DXMauiApp.ViewModels
             // Prepare sound effects
             AudioManager am = new AudioManager();
 
-            // State handling
-            ButtonState = false;
-
             // Show loading screen
             IsLoading = true;
             ImageUrl = "";
             ImageDescription = "Verifying...";
             IsResultPopOpen = true;
 
-            // Do REST magic
-            User user = new User()
-            {
-                email = Mail,
-                image = "data:image/jpeg;base64," + base64String
-            };
+            var image = "data:image/jpeg;base64," + base64String;
 
-            Debug.WriteLine("LOOK AT MAIL:" + user.email);
-
-            var response = await UserService.VerifyUserByFaceAsync(user);
+            var response = await UserService.VerifyUserByFaceAsync(Token, SelectedLock, image);
 
             IsLoading = false;
 

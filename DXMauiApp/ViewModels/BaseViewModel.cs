@@ -16,6 +16,7 @@ namespace DXMauiApp.ViewModels
         public IUserRestService UserService => DependencyService.Get<IUserRestService>();
         public ILockRestService LockService => DependencyService.Get<ILockRestService>();
         public IInviteRestService InviteService => DependencyService.Get<IInviteRestService>();
+        public IServerRestService ServerService => DependencyService.Get<IServerRestService>();
 
         public bool IsBusy
         {
@@ -68,31 +69,43 @@ namespace DXMauiApp.ViewModels
 
         public async void RedirectToLogin()
         {
-            BaseToken = await SecureStorage.Default.GetAsync("auth_token");
-
-            if (BaseToken == null || BaseToken.Equals(""))
+            try
             {
-                // No value is associated with the key "auth_token", so redirect to login
-                await Navigation.NavigateToAsync<LoginViewModel>(false);
-            }
-            else
-            {
-                TokenRequest request = new TokenRequest();
+                var authToken = await SecureStorage.Default.GetAsync("auth_token");
 
-                request.Token = BaseToken.Replace("\"", "");
-
-                MessagingCenter.Send(this, "TokenTransfer", request.Token);
-
-                var result = await UserService.UserConfirmAccessAsync(request);
-
-                if (!result.IsSuccessStatusCode)
+                if (authToken != null)
                 {
-                    await SecureStorage.Default.SetAsync("auth_token", "");
+                    BaseToken = authToken;
+                }
 
+                if (BaseToken == null || BaseToken.Equals(""))
+                {
+                    // No value is associated with the key "auth_token", so redirect to login
                     await Navigation.NavigateToAsync<LoginViewModel>(false);
+                }
+                else
+                {
+                    TokenRequest request = new TokenRequest();
 
+                    request.Token = BaseToken.Replace("\"", "");
+
+                    MessagingCenter.Send(this, "TokenTransfer", request.Token);
+
+                    var result = await UserService.UserConfirmAccessAsync(request);
+
+                    if (result != null && !result.IsSuccessStatusCode)
+                    {
+                        await SecureStorage.Default.SetAsync("auth_token", "");
+
+                        await Navigation.NavigateToAsync<LoginViewModel>(false);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
+
     }
 }

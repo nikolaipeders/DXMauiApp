@@ -27,15 +27,64 @@ namespace DXMauiApp.Services
             };
         }
 
-        public Task<List<Invite>> GetAllInvitesAsync(TokenRequest token)
+        public async Task<List<Invite>> GetAllInvitesAsync(TokenRequest token, string user_id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string apiUrl = baseUrl + $"invite/search/{user_id}";
+
+                _client.DefaultRequestHeaders.Clear();
+                _client.DefaultRequestHeaders.Add("token", token.Token);
+
+                Debug.WriteLine("TOKEN INVITE GET ALL IS " + token.Token);
+                Debug.WriteLine("TOKEN INVITE ID " + user_id);
+
+                HttpResponseMessage response = await _client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    };
+
+                    List<Invite> invites = JsonSerializer.Deserialize<List<Invite>>(responseContent, serializerOptions);
+
+                    return invites;
+                }
+
+                // Throw an exception instead of returning null
+                throw new Exception("Failed to retrieve invite information. Status code: " + response.StatusCode);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ERROR: " + ex.Message);
+                throw;
+            }
         }
 
-        public Task<HttpResponseMessage> RespondToinviteAsync(TokenRequest request, string response)
+        public async Task<HttpResponseMessage> RespondToInviteAsync(TokenRequest request, string id, string answer)
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("RESPOND SERVICE CALLED");
+            Uri uri = new Uri(baseUrl + $"invite/respond/{id}/{answer}");
+
+            try
+            {
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, uri);
+                requestMessage.Headers.Add("token", request.Token);
+
+                HttpResponseMessage response = await _client.SendAsync(requestMessage);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
 
         public async Task<HttpResponseMessage> SendInviteAsync(TokenRequest request, Lock exiLock, string mail)
         {
