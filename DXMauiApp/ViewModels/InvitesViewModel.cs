@@ -3,6 +3,7 @@ using DXMauiApp.Models;
 using DXMauiApp.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace DXMauiApp.ViewModels
 {
@@ -117,6 +118,9 @@ namespace DXMauiApp.ViewModels
                 {
                     if (!item.accepted)
                     {
+                        DateTime dateTime = DateTime.ParseExact(item.date, "yyyy-MM-dd'T'HH:mm:ss.fff'Z'", CultureInfo.InvariantCulture);
+                        item.date = dateTime.ToString("dd-MM-yyyy 'at' HH:mm");
+
                         Invites.Add(item);
                     }
                 }

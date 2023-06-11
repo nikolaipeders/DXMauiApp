@@ -61,7 +61,7 @@
                 <StackLayout Orientation="Vertical">
 
                     <Label 
-                    Text="{Binding SelectedInvite.name}"
+                    Text="{Binding SelectedInvite.lock_name}"
                     TextColor="#404144"
                     Margin="24,16,24,14"
                     HorizontalTextAlignment="Center"

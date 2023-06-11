@@ -268,7 +268,7 @@ namespace DXMauiApp.ViewModels
             if (result.IsSuccessStatusCode)
             {
                 ImageUrl = "checked.png";
-                ImageDescription = "Leaved lock!";
+                ImageDescription = "Left lock!";
                 var audioSuccess = am.CreatePlayer(await FileSystem.OpenAppPackageFileAsync("alert.mp3"));
                 audioSuccess.Play();
             }

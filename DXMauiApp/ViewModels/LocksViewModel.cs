@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using DXMauiApp.Models;
 using DXMauiApp.Services;
-using Java.Util.Concurrent.Locks;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -145,8 +144,6 @@ namespace DXMauiApp.ViewModels
 
         async Task LoadLocks()
         {
-            Debug.WriteLine("LOAD LOCKS CALLED");
-
             try
             {
                 var locks = await LockService.GetAllLocksAsync(Token);
@@ -207,7 +204,6 @@ namespace DXMauiApp.ViewModels
                 Id = await SecureStorage.Default.GetAsync("user_id");
 
             }
-
             WeakReferenceMessenger.Default.Send(new MessagePublisher(Id, Token.Token));
         }
 

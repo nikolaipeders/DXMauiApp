@@ -36,9 +36,6 @@ namespace DXMauiApp.Services
                 _client.DefaultRequestHeaders.Clear();
                 _client.DefaultRequestHeaders.Add("token", token.Token);
 
-                Debug.WriteLine("TOKEN INVITE GET ALL IS " + token.Token);
-                Debug.WriteLine("TOKEN INVITE ID " + user_id);
-
                 HttpResponseMessage response = await _client.GetAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -80,7 +77,7 @@ namespace DXMauiApp.Services
             }
             catch (Exception ex)
             {
-                return null;
+                throw;
             }
         }
 

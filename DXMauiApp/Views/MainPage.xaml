@@ -8,12 +8,19 @@
         x:Class= "DXMauiApp.Views.MainPage">
 
     <TabBar>
-        <Tab Title="Locks" Icon="browse">
-            <ShellContent ContentTemplate="{DataTemplate local:LocksPage}" Route= "DXMauiApp.Views.LocksPage" />
+        <Tab 
+            Title="Locks" 
+            Icon="browse">
+            <ShellContent 
+                ContentTemplate="{DataTemplate local:LocksPage}" 
+                Route= "DXMauiApp.Views.LocksPage" />
         </Tab>
-        <Tab Title="Account" Icon="accountcircle">
-            <ShellContent ContentTemplate="{DataTemplate local:AccountPage}" Route= "DXMauiApp.Views.AccountPage" />
+        <Tab 
+            Title="Account" 
+            Icon="accountcircle">
+            <ShellContent 
+                ContentTemplate="{DataTemplate local:AccountPage}" 
+                Route= "DXMauiApp.Views.AccountPage" />
         </Tab>
     </TabBar>
-
 </Shell>
