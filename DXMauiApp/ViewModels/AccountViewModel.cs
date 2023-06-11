@@ -1,5 +1,4 @@
-﻿using Com.Google.Android.Exoplayer2.Analytics;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using DevExpress.Data.Mask.Internal;
 using DevExpress.Services.Implementation;
 using DXMauiApp.Models;
@@ -8,6 +7,7 @@ using Microsoft.Maui.Controls;
 using Plugin.Maui.Audio;
 using System;
 using System.Buffers.Text;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Security;
 
@@ -267,6 +267,7 @@ namespace DXMauiApp.ViewModels
                         SnapShot = "user.png";
                     }
                 }
+
             }
             catch (Exception ex)
             {

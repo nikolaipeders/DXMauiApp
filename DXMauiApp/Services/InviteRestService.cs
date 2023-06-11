@@ -67,7 +67,6 @@ namespace DXMauiApp.Services
 
         public async Task<HttpResponseMessage> RespondToInviteAsync(TokenRequest request, string id, string answer)
         {
-            Debug.WriteLine("RESPOND SERVICE CALLED");
             Uri uri = new Uri(baseUrl + $"invite/respond/{id}/{answer}");
 
             try
@@ -84,7 +83,6 @@ namespace DXMauiApp.Services
                 return null;
             }
         }
-
 
         public async Task<HttpResponseMessage> SendInviteAsync(TokenRequest request, Lock exiLock, string mail)
         {

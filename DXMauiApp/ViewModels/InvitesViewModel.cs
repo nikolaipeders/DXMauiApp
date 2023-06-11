@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using DXMauiApp.Models;
 using DXMauiApp.Services;
-using Java.Util.Concurrent.Locks;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -108,28 +107,24 @@ namespace DXMauiApp.ViewModels
 
         async Task LoadInvites()
         {
-            Debug.WriteLine("LOAD INVITES CALLED");
-
             try
             {
                 var invites = await InviteService.GetAllInvitesAsync(Token, ExiUser._id);
 
-                // Update the existing Locks collection
                 Invites.Clear();
-                foreach (var item in invites)
-                {
-                    Invites.Add(item);
-                }
 
-                ObservableCollection<Invite> uniqueInvites = new ObservableCollection<Invite>(Invites.Distinct());
-                Invites.Clear();
-                foreach (var item in uniqueInvites)
+                foreach (var item in invites)
                 {
                     if (!item.accepted)
                     {
                         Invites.Add(item);
                     }
                 }
+
+                ObservableCollection<Invite> uniqueInvites = new ObservableCollection<Invite>(Invites.Distinct());
+
+                Invites = uniqueInvites;
+
             }
             catch (Exception ex)
             {
@@ -156,7 +151,6 @@ namespace DXMauiApp.ViewModels
             if (invite == null)
                 return;
 
-            // Check if the action sheet is already open
             if (!IsActionSheetOpen)
             {
                 SelectedInvite = invite;

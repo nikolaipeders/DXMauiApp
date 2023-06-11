@@ -13,6 +13,7 @@ namespace DXMauiApp.Models
         public string to { get; set; }
         public string lock_id { get; set; }
         public string date { get; set; }
+        public string lock_name { get; set; }
         public bool accepted { get; set; }
     }
 }

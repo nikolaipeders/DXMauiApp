@@ -19,7 +19,6 @@ namespace DXMauiApp.Services
             WeakReferenceMessenger.Default.Register<MessagePublisher>(this, (r, m) =>
             {
                 id = m.Value.Item1;
-                Debug.WriteLine("CONVERTER ID IS " + id);
             });
         }
 

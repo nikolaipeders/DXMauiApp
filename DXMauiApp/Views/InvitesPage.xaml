@@ -23,18 +23,12 @@
                 <DataTemplate>
                     <Grid>
                         <StackLayout Padding="18,20,10,01" x:DataType="model:Invite">
-                            <Label Text="{Binding lock_id}"
+                                <Label Text="{Binding lock_name}"
                                         LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontFamily="Roboto"
                                         FontSize="14"
                                         TextColor="{StaticResource NormalText}"/>
-                                <Label Text="{Binding from}"
-                                        LineBreakMode="NoWrap"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
-                                        FontFamily="Roboto"
-                                        FontSize="12"
-                                        TextColor="{StaticResource NormalLightText}"/>
                                 <Label Text="{Binding date}"
                                        LineBreakMode="NoWrap"
                                        Style="{DynamicResource ListItemDetailTextStyle}"
