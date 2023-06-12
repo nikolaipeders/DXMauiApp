@@ -192,6 +192,9 @@ namespace DXMauiApp.Services
 
                 HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
+                string responseBody = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine("RESPONSE BODY: " + responseBody);
+
                 Debug.WriteLine("RESPONSE FROM FACE IS " + response.StatusCode);
 
                 return response;

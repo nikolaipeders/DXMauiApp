@@ -165,7 +165,7 @@ namespace DXMauiApp.ViewModels
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                await CheckStatus();
+                //await CheckStatus();
             }
         }
 
